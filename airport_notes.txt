@@ -1,0 +1,128 @@
+Airport 
+
+End goal: to try to predict propylene glycol load based on forcing factors, using a regression (probably step-wise). Determine if there is/has 
+been a significant change in loading due to management practices.
+possible forcing factors: application amount/dilution factor, weather, precip type and amount, air temperature during de-icing event, 
+(timing of de-icing events and number of planes, no data this necessarily, may need to infer)
+respose variables: COD and BOD (surrogates for combo of all de-icers), all de-icers (pavement de-icers, propylene glycol, ethylene glycol), 
+but some of these are more accurate than others.
+
+Background: monitoring began in 1996. One station above airport, not necessary to use for this study. Numbers are so low (background levels) w/o 
+de-icer that we don't need to subtract out. Two stations at airport: Outfall 7, big site that drains most of the airport de-icing runoff; cargo 
+site drains just a concentrated loading area. One station downstream from the airport: St. Luke's, results of a tracer study are used to calculate 
+lag to this site for de-icing events. Approx 6 events per year. Defining an 'event' will be part of the difficulty - airport info, air temp, precip, 
+etc are options. Used to use a mix of propylene glycol and ethylene glycol, but switched to all propylene glycol. don't have data for degradates, will 
+ignore that for this study. For management practices, they have a bladder system that is supposed to capture runoff from the stream and suck it up. 
+
+Questions:
+management of de-icer runoff: when were changes made? more than one date? define "before" and "after"
+how to infer timing of de-icing events: airport reporting, air temperature, precip type and amount, other?
+how to infer load of de-icers during an event: airport reporting, number of flights at event time, size of planes, percent dilution 
+(either reported or inferred from air temp), other?
+how to define de-icing events for qw samples: hydrograph, same questions as above
+defining event start/etc. there is the start and end of a sampling event, and of a de-icing event, and of a precip event. imp't question is, 
+how far back to go from the sampling event start, and how to decide which precip is imp't for loads/etc. look at nws hourly data for descriptions 
+as far as rain vs snow. can also use temp to try and infer. steve's rainmaker r function does some of this offset (goes back until hits a specified 
+amount of dry period to define event start), could be expanded to look for rain vs snow.
+http://w1.weather.gov/data/obhistory/KMKE.html
+http://www.crh.noaa.gov/data/obhistory/KMKE.html
+
+Data: 
+//projects/nonpoint/gmia/R/ for preliminary weather data and R scripts for dealing with it
+//projects/nonpoint/gmia/WQ2013/ for data pulled from NWIS QWData and calculated loads
+QW - much is ready, Troy will work on calculating loads for remaining events
+weather - some NWIS, some NWS, need to try and get hourly air temp and precip as well as daily summaries
+check out NCDC to see what else is available and may be used as a forcing variable
+airport application data - have some of this, need more. they measure depth if melted for precip
+
+Steps:
+1) take a look at available data, determine holes, work with Troy on merging of data
+2) experiment with a few different ways to define de-icing events (temp, precip type, airport info, etc)
+3) develop regression for whole period of data, experiment with forcing factors
+4) define "before" and "after" periods for de-icer management
+5) compare residuals for regression for "before" and "after" periods and see if they sort into a couple groups. can test significance of difference 
+between these groups using Wilcox or T-test
+
+COD pcode 00335
+BOD pcode 00310
+ethylene glycol pcode 91075
+propylene glycol pcode 91080
+
+sites and nwisweb data available:
+040871473 - infall
+daily temp and discharge 1996-2013
+peak streamflow 1998-2012
+instantaneous data archive 1996-2007
+qw COD,BOD,ethylene glycol and propylene glycol 1996-2013
+040871475 - outfall #7
+**daily temp 1996-2013, daily discharge 2005-2013
+**peak streamflow 2006-2012
+**instantaneous data archive 2005-2007
+qw COD, BOD, ethylene glycol, propylene glycol and discharge 1996-2013
+040871476 - outfall #1 (Cargo)
+daily temp and discharge 1996-2013
+peak streamflow 1998-2008
+instantaneous data archive 1996-2007
+qw COD,BOD,ethylene glycol and propylene glycol 1996-2013
+040871488 - st luke's
+daily temp and discharge 1996-2013
+peak streamflow 1998-2012
+instantaneous data archive 1996-2007
+qw COD,BOD,ethylene glycol and propylene glycol 1996-2013
+
+Data Inventory:
+
+//deicer collection/deicer collection through 2004 winter.xls
+contains dates (day-level) and 'pure glycol', units unknown for 12/1/1999 through 4/15/2004, w/ breaks each year april-nov
+//deicer usage/COD volumes and loads/
+files for 2008, 2002, 2003, 2004 - COD and glycol/deicer
+files for 2009, 2011, 2012, 2002-2005, 2010
+//deicer usage/
+cargo and outfall deicer usage dec 99 and jan 00
+cargo and outfall decier usage nov 2001-april 2002
+cargo and outfall deicer usage nov 2002-april 2003
+deicer usage nov 2003-aprile 2004
+deicer usage nov 2004-april 2005
+**2006 and 2007 are missing**
+deicer usage nov 2007-april 2008
+deicer usage 1/24/03 - 4/15/07
+deicer usage nov 2008-april 2009
+deicer usage nov 2009-april 2010
+deicer usage nov 2010-april 2011
+//event notes/
+contains info about events for WY 2001-2013, discharge, volume, etc
+//Loads/
+mostly old (?) load data
+//WY 2013 QW data/
+gmia.qw.5.1996-2012.with.loadings.xlsx - I believe this is the file that contains everything, although Troy may not be finished with it
+//R/
+st lukes sample times
+outfall7_air_temp_2006-2009.RDB 15-minute air temp data for outfall #7 pulled from NWIS
+milw.weather.1990-2011.xls - daily weather data (precip, snowfall, snow depth, water equivalent of snow on ground, binary info on precip type
+gmia start end storm dates
+gmia_rain_2000-2012.txt hourly precip data
+
+Data from NCDC:
+Precip
+15-minute - NA
+Hourly Precip - acquired
+**Hourly Global - acquired** gives hourly wind, sky condition, visibility, temp, precip, dewpoint, atm pressure, snow depth, snow accumulation, weather obs, 
+cloud data, etc  - seems to match local data hourly obs found by steve
+GHCN Daily CoCoRaHS - NA
+GHCN Daily GHCN - acquired
+GHCN Daily WMO - NA
+Global Summary of the Day - same as below
+Climate Reference Network - NA
+Local Climatological Data - same as below
+
+Air temp
+Hourly global - same as hourly global for precip
+GHCN Daily CoCoRaHS - not available
+GHCN daily GHCN - same as GHCN daily precip
+GHCN Daily WMO - NA
+Global Summary of the Day - acquired
+Climate Reference Network - NA
+Local Climatological Data - available a month at a time
+
+Question: local data hourly observations table has hourly sky conditions, visibility, dry bulb temp, wet bulb temp, dew point temp, rel humidity, 
+wind speed, wind direction, wind gusts, station pressure, precip total, altimeter. does anything else have this?

@@ -1,0 +1,54 @@
+UNKNOWN {
+	FONT-WEIGHT: normal; FONT-FAMILY: Arial, sans serif, Verdana; body: black
+}
+H1 {
+	FONT-WEIGHT: bold; FONT-SIZE: 1.4em; COLOR: #000099; FONT-FAMILY: Verdana
+}
+.h1subtitle {
+	FONT-WEIGHT: bold; FONT-SIZE: 10pt; COLOR: black; FONT-FAMILY: Arial
+}
+H2 {
+	FONT-WEIGHT: bold; FONT-SIZE: 8pt; COLOR: #000099; FONT-FAMILY: Arial; TEXT-DECORATION: underline
+}
+.h2body {
+	FONT-SIZE: 3pt; COLOR: #000099; FONT-FAMILY: Arial
+}
+H3 {
+	FONT-SIZE: 4pt; COLOR: gray; FONT-FAMILY: Arial
+}
+.h3subtitle {
+	FONT-SIZE: 3pt; COLOR: gray; FONT-FAMILY: Arial
+}
+P {
+	FONT-WEIGHT: normal; FONT-SIZE: 11pt; COLOR: gray; FONT-FAMILY: Arial, sans serif, Verdana
+}
+.copyright {
+	FONT-SIZE: 2pt; COLOR: black; FONT-FAMILY: Arial
+}
+.sidetext {
+	FONT-WEIGHT: normal; FONT-SIZE: 10pt; COLOR: gray; LINE-HEIGHT: 20pt; FONT-FAMILY: oblique
+}
+.agstitle {
+	FONT-WEIGHT: bold; FONT-SIZE: 18pt; COLOR: black; FONT-FAMILY: Arial
+}
+.agssubtitle {
+	FONT-SIZE: 5pt; COLOR: #000099; FONT-FAMILY: Arial
+}
+.menuleft {
+	FONT-WEIGHT: bold; FONT-SIZE: 10pt; COLOR: gray; FONT-FAMILY: Arial
+}
+.disclaimer {
+	FONT-SIZE: 9pt; COLOR: black; FONT-FAMILY: Arial
+}
+.menutop {
+	FONT-WEIGHT: bold; FONT-SIZE: 10pt; COLOR: #000099; FONT-FAMILY: Arial; TEXT-ALIGN: center; TEXT-DECORATION: none
+}
+.list1 {
+	FONT-WEIGHT: normal; FONT-SIZE: 10pt; COLOR: #000099; FONT-FAMILY: Arial
+}
+.list2 {
+	FONT-WEIGHT: bold; FONT-SIZE: 12pt; COLOR: #000099; FONT-FAMILY: Arial
+}
+.list3 {
+	FONT-SIZE: 11pt; COLOR: #000099; FONT-FAMILY: Arial
+}

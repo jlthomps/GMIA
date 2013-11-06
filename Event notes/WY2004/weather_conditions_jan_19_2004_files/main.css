@@ -1,0 +1,57 @@
+#menuitem A:link {
+	COLOR: white; TEXT-DECORATION: none
+}
+A:link {
+	COLOR: #0000ff; TEXT-DECORATION: none
+}
+#menuitem A:visited {
+	COLOR: #ffffff
+}
+A:visited {
+	COLOR: #003399; TEXT-DECORATION: none
+}
+#menuitem A:hover {
+	COLOR: #f0e68c; TEXT-DECORATION: underline
+}
+A:hover {
+	COLOR: #ff0000; TEXT-DECORATION: underline
+}
+H1 {
+	FONT-SIZE: 20pt; FONT-FAMILY: Arial, Helvetica, San Serif
+}
+H3 {
+	FONT-SIZE: 13pt; FONT-FAMILY: Arial, Helvetica, San Serif
+}
+.white {
+	FONT-WEIGHT: bold; FONT-SIZE: 9pt; COLOR: #ffffff; FONT-FAMILY: Arial, Helvetica, San Serif
+}
+.yellow {
+	FONT-WEIGHT: bold; FONT-SIZE: 9pt; COLOR: #f0e68c; FONT-FAMILY: Arial, Helvetica, San Serif
+}
+.searchinput {
+	FONT-SIZE: 8pt
+}
+.searchinput SELECT {
+	FONT-SIZE: 8pt
+}
+.searchinput INPUT {
+	FONT-SIZE: 8pt
+}
+TD {
+	FONT-SIZE: 9pt; FONT-FAMILY: Arial, Helvetica, San Serif
+}
+.gray {
+	FONT-SIZE: 8pt; COLOR: #808080
+}
+.nav {
+	FONT-WEIGHT: bold; FONT-SIZE: 9pt; COLOR: #ffffff; FONT-FAMILY: Arial, Helvetica, San Serif
+}
+.nwslink {
+	FONT-SIZE: 9pt; COLOR: black; FONT-FAMILY: Arial, Helvetica, San Serif; TEXT-DECORATION: none
+}
+.smalllink {
+	FONT-SIZE: 8pt; COLOR: blue; FONT-FAMILY: Arial, Helvetica, San Serif; TEXT-DECORATION: none
+}
+.srhwhite {
+	FONT-WEIGHT: bold; FONT-SIZE: 9pt; COLOR: #ffffff; FONT-FAMILY: Arial, Helvetica, San Serif; TEXT-DECORATION: none
+}

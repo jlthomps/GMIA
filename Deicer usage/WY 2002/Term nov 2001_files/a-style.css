@@ -1,0 +1,57 @@
+.indent {
+	MARGIN: 5px 25px; TEXT-ALIGN: left
+}
+.menutext {
+	FONT-SIZE: 10pt
+}
+.tabletext {
+	FONT-SIZE: 8pt
+}
+.indenthead {
+	MARGIN-TOP: 10px; MARGIN-LEFT: 10px; MARGIN-RIGHT: 10px
+}
+.indenthead2 {
+	MARGIN-TOP: 10px; MARGIN-LEFT: 10px; MARGIN-RIGHT: 10px; TEXT-ALIGN: right
+}
+.indenthead3 {
+	MARGIN: 0px 10px; TEXT-ALIGN: right
+}
+A:link {
+	FONT-WEIGHT: bold; COLOR: #cc9900
+}
+A:visited {
+	FONT-WEIGHT: bold; COLOR: #cc9900
+}
+A:active {
+	FONT-WEIGHT: bold; COLOR: #99cc00
+}
+BODY {
+	MARGIN-TOP: 5px; FONT-SIZE: 10pt; COLOR: #333300; FONT-FAMILY: Arial, Helvetica, sans-serif; BACKGROUND-COLOR: #ffffff
+}
+TABLE {
+	table-border-color-light: rgb(204, 153, 255); table-border-color-dark: rgb(204, 0, 204)
+}
+H1 {
+	MARGIN-TOP: 10px; FONT-WEIGHT: bold; FONT-SIZE: 24pt; COLOR: #216121; FONT-FAMILY: 'Arial Narrow', Arial; text-valign: bottom
+}
+H2 {
+	FONT-WEIGHT: bold; COLOR: #000099; FONT-FAMILY: 'Arial Narrow', Arial
+}
+H3 {
+	FONT-WEIGHT: bold; COLOR: #216121; FONT-FAMILY: 'Arial Narrow', Arial
+}
+H4 {
+	FONT-WEIGHT: bold; COLOR: #0033cc; FONT-FAMILY: 'Arial Narrow', Arial
+}
+H5 {
+	COLOR: rgb(51,0,153); FONT-FAMILY: Arial Narrow, Arial
+}
+H6 {
+	COLOR: rgb(204,0,153); FONT-FAMILY: Arial Narrow, Arial
+}
+UL {
+	LIST-STYLE-IMAGE: url(../_PMWeb/images/bullet.gif)
+}
+TD {
+	VERTICAL-ALIGN: top
+}
