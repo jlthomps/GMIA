@@ -14,6 +14,16 @@ lag to this site for de-icing events. Approx 6 events per year. Defining an 'eve
 etc are options. Used to use a mix of propylene glycol and ethylene glycol, but switched to all propylene glycol. don't have data for degradates, will 
 ignore that for this study. For management practices, they have a bladder system that is supposed to capture runoff from the stream and suck it up. 
 
+define two periods during event - whole event, snow/ice portion of event
+what precip conditions explain glycol loadings
+use formula in event_notes_2013.xls for travel to St Luke's to determine start and end of event at St Luke's, relative to Outfall 7
+NWIS unit values - check for codes for ice-affected
+talk to Laura about Austin's GLRI regressions with ice affect
+if needed, could look at daily values to determine which are ice-affected
+also have snowmelt events - no precip, but sampled to look at storage of glycol in snow
+ultimately just loads for given events is what is needed for regression
+use hydrovol function to determine volumnes for St. Luke's (Outfall 7 and Cargo already computed)
+
 Questions:
 management of de-icer runoff: when were changes made? more than one date? define "before" and "after"
 how to infer timing of de-icing events: airport reporting, air temperature, precip type and amount, other?
