@@ -1,5 +1,12 @@
 Airport 
 
+instantaneous discharge sometimes ice affected at st. luke's, outfall
+qualifer for event ice effected - daily values will be estimated
+loads - also try COD
+adaps discharge - mean and peak for event
+snow depth - beginning and end of event
+
+
 End goal: to try to predict propylene glycol load based on forcing factors, using a regression (probably step-wise). Determine if there is/has 
 been a significant change in loading due to management practices.
 possible forcing factors: application amount/dilution factor, weather, precip type and amount, air temperature during de-icing event, 
