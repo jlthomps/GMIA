@@ -35,8 +35,10 @@ daily_summ$hail <- substr(daily_summ$FRSHTT,4,4)
 daily_summ$thunder <- substr(daily_summ$FRSHTT,5,5)
 daily_summ$tornado <- substr(daily_summ$FRSHTT,6,6)
 #GHCN_daily <- read.csv("D:/JLTData/gmia/GHCN_daily_170728.csv",header=TRUE,stringsAsFactors=FALSE)
-HRLY_PRECIP <- read.csv("M:/NonPoint Evaluation/gmia/R/hourly_precip_170692.csv",header=TRUE,stringsAsFactors=FALSE)
-HRLY_PRECIP$Date <- as.POSIXct(HRLY_PRECIP$DATE,format="%Y%m%d %H:%M")
+#HRLY_PRECIP <- read.csv("M:/NonPoint Evaluation/gmia/R/hourly_precip_170692.csv",header=TRUE,stringsAsFactors=FALSE)
+#HRLY_PRECIP$Date <- as.POSIXct(HRLY_PRECIP$DATE,format="%Y%m%d %H:%M")
+hourly_data <- read.delim("M:/NonPoint Evaluation/gmia/R/hourly_global.txt",header=FALSE,stringsAsFactors=FALSE,skip=2,strip.white=TRUE,comment.char="",sep=",")
+hourly_names <- read.delim("M:/NonPoint Evaluation/gmia/R/hourly_global.txt",header=FALSE,stringsAsFactors=FALSE,nrows=2,strip.white=TRUE,comment.char="",sep=" ")
 gmia_loads <- read.csv("M:/NonPoint Evaluation/gmia/R/loading.csv",header=TRUE,stringsAsFactors=FALSE)
 outLoads <- gmia_loads[which(gmia_loads$Site=='OUT'),]
 cargoLoads <- gmia_loads[which(gmia_loads$Site=='CG'),]
