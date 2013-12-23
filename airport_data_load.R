@@ -1,12 +1,10 @@
 library(dataRetrieval)
+library(USGSwsBase)
 siteNumber <- '040871475'
-ParameterCd <- '00045'
+ParameterCd <- '00060'
 StartDate <- '1997-10-01'
 EndDate <- '2012-10-01'
-#outfall_precip <- getRDB1Data("M:/NonPoint Evaluation/gmia/R/outfall7_precip.rdb",asDateTime=TRUE)
-outfall_temp <- getRDB1Data("M:/NonPoint Evaluation/gmia/R/outfall7comp.rdb",asDateTime=TRUE)
-#outfall_precip$datetime <- as.POSIXct(paste(outfall_precip$DATE,outfall_precip$TIME,sep=" "),format="%Y%m%d %H%M%S")
-outfall_temp$datetime <- as.POSIXct(paste(outfall_temp$DATE,outfall_temp$TIME, sep=" "),format="%Y%m%d %H%M%S")
+
 daily_summ <- read.csv("M:/NonPoint Evaluation/gmia/R/global_daily_summary_CDO2400066445620.txt",header=TRUE,stringsAsFactors=FALSE,strip.white=TRUE)
 daily_summ$FRSHTT <- sprintf("%06d",daily_summ$FRSHTT)
 daily_summ$date <- as.Date(as.character(daily_summ$YEARMODA),format="%Y%m%d")
@@ -34,81 +32,165 @@ daily_summ$snow <- substr(daily_summ$FRSHTT,3,3)
 daily_summ$hail <- substr(daily_summ$FRSHTT,4,4)
 daily_summ$thunder <- substr(daily_summ$FRSHTT,5,5)
 daily_summ$tornado <- substr(daily_summ$FRSHTT,6,6)
-#GHCN_daily <- read.csv("D:/JLTData/gmia/GHCN_daily_170728.csv",header=TRUE,stringsAsFactors=FALSE)
-#HRLY_PRECIP <- read.csv("M:/NonPoint Evaluation/gmia/R/hourly_precip_170692.csv",header=TRUE,stringsAsFactors=FALSE)
-#HRLY_PRECIP$Date <- as.POSIXct(HRLY_PRECIP$DATE,format="%Y%m%d %H:%M")
+
 hourly_data <- read.delim("M:/NonPoint Evaluation/gmia/R/hourly_global.txt",header=FALSE,stringsAsFactors=FALSE,skip=2,strip.white=TRUE,comment.char="",sep=",")
-hourly_names <- read.delim("M:/NonPoint Evaluation/gmia/R/hourly_global.txt",header=FALSE,stringsAsFactors=FALSE,nrows=2,strip.white=TRUE,comment.char="",sep=" ")
-gmia_loads <- read.csv("M:/NonPoint Evaluation/gmia/R/loading.csv",header=TRUE,stringsAsFactors=FALSE)
-outLoads <- gmia_loads[which(gmia_loads$Site=='OUT'),]
-cargoLoads <- gmia_loads[which(gmia_loads$Site=='CG'),]
-lukeLoads <- gmia_loads[which(gmia_loads$Site=='LK'),]
-infallLoads <- gmia_loads[which(gmia_loads$Site=='US'),]
+hourly_sub <- hourly_data[,c(1:8,22:23,24:25,26:27,28:49,130:135,136:151,162:189)]
+colnames(hourly_sub) <- c("site_name","USAF","NCDC","Date","Time","I","Type","QCP","temp","tempQ","dewpt","dewptq","atmpr","atmprq",
+                          "precip1hr","precip1dpth","precip1cond","precip1q","precip2hr","precip2dpth","precip2cond","precip2q",
+                          "precip3hr","precip3dpth","precip3cond","precip3q","precip4hr","precip4dpth","precip4cond","precip4q",
+                          "prcpmnthdpth","prcpmnthcond","precipmnthq","prcphstdur","prcphstchar","prcphstq","snowdpth","snowdpthcond","snowdpthq","snowwteq",
+                          "snowwteqcond","snowwteqq","snowacc1hrs","snowacc1dpth","snowacc1cond","snowacc1q","snowacc2hrs","snowacc2dpth","snowacc2cond","snowacc2q",
+                          "snowacc3hrs","snowacc3dpth","snowacc3cond","snowacc3q","snowacc4hrs","snowacc4dpth","snowacc4cond","snowacc4q",
+                          "prcpmin1min","prcpmin1dpth","prcpmin1cond","prcpmin1q","prcpmin2min","prcpmin2dpth","prcpmin2cond","prcpmin2q",
+                          "prcpmin3min","prcpmin3dpth","prcpmin3cond","prcpmin3q","prcpmin4min","prcpmin4dpth","prcpmin4cond","prcpmin4q",
+                          "prcp15min1mm","prcp15min1cond","prcp15min1q","prcp15min2mm","prcp15min2cond","prcp15min2q",
+                          "prcp15min3mm","prcp15min3cond","prcp15min3q","prcp15min4mm","prcp15min4cond","prcp15min4q")
+hourly_sub$temp <- ifelse(hourly_sub$temp==9999,'',hourly_sub$temp)
+hourly_sub$dewpt <- ifelse(hourly_sub$dewpt==9999,'',hourly_sub$dewpt)
+hourly_sub$atmpr <- ifelse(hourly_sub$atmpr==99999,'',hourly_sub$atmpr)
+hourly_sub$precip1hr <- ifelse(hourly_sub$precip1hr==99,'',hourly_sub$precip1hr)
+hourly_sub$precip1dpth <- ifelse(hourly_sub$precip1dpth==999.9,'',hourly_sub$precip1dpth)
+hourly_sub$precip2hr <- ifelse(hourly_sub$precip2hr==99,'',hourly_sub$precip2hr)
+hourly_sub$precip2dpth <- ifelse(hourly_sub$precip2dpth==999.9,'',hourly_sub$precip2dpth)
+hourly_sub$precip3hr <- ifelse(hourly_sub$precip3hr==99,'',hourly_sub$precip3hr)
+hourly_sub$precip3dpth <- ifelse(hourly_sub$precip3dpth==999.9,'',hourly_sub$precip3dpth)
+hourly_sub$precip4hr <- ifelse(hourly_sub$precip4hr==99,'',hourly_sub$precip4hr)
+hourly_sub$precip4dpth <- ifelse(hourly_sub$precip4dpth==999.9,'',hourly_sub$precip4dpth)
+hourly_sub$prcpmnthdpth <- ifelse(hourly_sub$prcpmnthdpth==9999.9,'',hourly_sub$prcpmnthdpth)
+hourly_sub$prcphstdur <- ifelse(hourly_sub$prcphstdur==9,'',hourly_sub$prcphstdur)
+hourly_sub$snowdpth <- ifelse(hourly_sub$snowdpth==9,'',hourly_sub$snowdpth)
+hourly_sub$snowwteq <- ifelse(hourly_sub$snowwteq==9,'',hourly_sub$snowwteq)
+hourly_sub$snowacc1hrs <- ifelse(hourly_sub$snowacc1hrs==99,'',hourly_sub$snowacc1hrs)
+hourly_sub$snowacc1dpth <- ifelse(hourly_sub$snowacc1dpth==999,'',hourly_sub$snowacc1dpth)
+hourly_sub$snowacc2hrs <- ifelse(hourly_sub$snowacc2hrs==99,'',hourly_sub$snowacc2hrs)
+hourly_sub$snowacc2dpth <- ifelse(hourly_sub$snowacc2dpth==999,'',hourly_sub$snowacc2dpth)
+hourly_sub$snowacc3hrs <- ifelse(hourly_sub$snowacc3hrs==99,'',hourly_sub$snowacc3hrs)
+hourly_sub$snowacc3dpth <- ifelse(hourly_sub$snowacc3dpth==999,'',hourly_sub$snowacc3dpth)
+hourly_sub$snowacc4hrs <- ifelse(hourly_sub$snowacc4hrs==99,'',hourly_sub$snowacc4hrs)
+hourly_sub$snowacc4dpth <- ifelse(hourly_sub$snowacc4dpth==999,'',hourly_sub$snowacc4dpth)
+# hourly_sub$prcpmin1min <- ifelse(hourly_sub$prcpmin1min==99,'',hourly_sub$prcpmin1min)
+# hourly_sub$prcpmin1dpth <- ifelse(hourly_sub$prcpmin1dpth==999.9,'',hourly_sub$prcpmin1dpth)
+# hourly_sub$prcpmin2min <- ifelse(hourly_sub$prcpmin2min==99,'',hourly_sub$prcpmin2min)
+# hourly_sub$prcpmin2dpth <- ifelse(hourly_sub$prcpmin2dpth==999.9,'',hourly_sub$prcpmin2dpth)
+# hourly_sub$prcpmin3min <- ifelse(hourly_sub$prcpmin3min==99,'',hourly_sub$prcpmin3min)
+# hourly_sub$prcpmin3dpth <- ifelse(hourly_sub$prcpmin3dpth==999.9,'',hourly_sub$prcpmin3dpth)
+# hourly_sub$prcpmin4min <- ifelse(hourly_sub$prcpmin4min==99,'',hourly_sub$prcpmin4min)
+# hourly_sub$prcpmin4dpth <- ifelse(hourly_sub$prcpmin4dpth==999.9,'',hourly_sub$prcpmin4dpth)
+# hourly_sub$prcp15min1mm <- ifelse(hourly_sub$prcp15min1mm==999.9,'',hourly_sub$prcp15min1mm)
+# hourly_sub$prcp15min2mm <- ifelse(hourly_sub$prcp15min2mm==999.9,'',hourly_sub$prcp15min2mm)
+# hourly_sub$prcp15min3mm <- ifelse(hourly_sub$prcp15min3mm==999.9,'',hourly_sub$prcp15min3mm)
+# hourly_sub$prcp15min4mm <- ifelse(hourly_sub$prcp15min4mm==999.9,'',hourly_sub$prcp15min4mm)
+hourly_sub$datetime <- as.POSIXct(paste(hourly_sub$Date,formatC(hourly_sub$Time,width=4,format="d",flag="0"),' '),format="%Y%m%d %H%M")
 
-outLoads$Start <- as.POSIXct(outLoads$Sample.Start.Date,format="%m-%d-%Y %H:%M")
-outLoads$End <- as.POSIXct(outLoads$Sample.End.Date,format="%m-%d-%Y %H:%M")
+inst_disch <- getRDB1Data("M:/NonPoint Evaluation/gmia/R/outfall00060.rdb",asDateTime=TRUE)
+inst_disch$datetime <- as.POSIXct(paste(inst_disch$DATE,inst_disch$TIME,sep=' '),format="%Y%m%d %H%M%S")
 
-storm_vol_load_Start <- aggregate(outLoads$Start, list(outLoads$Storm.ID), FUN = min)
-colnames(storm_vol_load_Start) <- c("num","Start")
-storm_vol_load_End <- aggregate(outLoads$End, list(outLoads$Storm.ID), FUN = max)
-colnames(storm_vol_load_End) <- c("num","End")
+daily_disch <- getRDB1Data("M:/NonPoint Evaluation/gmia/R/outfall00060DV.rdb",asDateTime=TRUE)
+daily_disch$datetime <- as.POSIXct(daily_disch$DATE,format="%Y%m%d")
 
-storm_vol_load_load <- aggregate(outLoads$EG.PG..kg, list(outLoads$Storm.ID), FUN = sum)
-colnames(storm_vol_load_load) <- c("num","TPLoad")
-storm_vol_load_merge <- merge(storm_vol_load_load, storm_vol_load_Start, by = "num")
-storm_vol_load_merge <- merge(storm_vol_load_merge, storm_vol_load_End, by = "num")
-storm_vol_load_merge$start_match <- storm_vol_load_merge$Start-60
+gmia_storms <- read.csv("M:/NonPoint Evaluation/gmia/R/loading.csv",header=TRUE,stringsAsFactors=FALSE)
+gmia_storms <- gmia_storms[which(gmia_storms$Site=="OUT"),c(2,5:7)]
+#gmia_storms <- unique(gmia_storms[,c(2,5:6)])
+gmia_storms$Sample.Start.Date <- as.POSIXct(gmia_storms$Sample.Start.Date,format="%m/%d/%Y %H:%M")
+gmia_storms$Sample.End.Date <- as.POSIXct(gmia_storms$Sample.End.Date,format="%m/%d/%Y %H:%M")
 
-storms_list <- storm_vol_load_merge[,c(3,4)]
-storms_list$Start <- storms_list$Start - (120*60)
-storms_list$num <- c(1:nrow(storms_list))
-norows <- nrow(storm_vol_load_merge)
-noreps <- nrow(HRLY_PRECIP)
-HRLY_PRECIP$stormnum <- -9
-for (i in 1:noreps) {
-  for (j in 1:norows) {
-    HRLY_PRECIP$stormnum[i] <- ifelse(as.numeric(HRLY_PRECIP$Date[i]-storms_list$Start[j])*as.numeric(storms_list$End[j]-HRLY_PRECIP$Date[i])>=0,storms_list$num[j],HRLY_PRECIP$stormnum[i])
-  }
+gmia_application <- read.csv("M:/NonPoint Evaluation/gmia/R/report.event.table.csv",header=TRUE,stringsAsFactors=FALSE)
+gmia_application$datetime <- as.POSIXct(gmia_application$Date,format="%m/%d/%Y")
+
+daily_ice <- daily_disch[which(daily_disch$TYPE=="E"),]
+inst_disch <- merge(daily_ice,inst_disch,by=c("DATE"),all.y=TRUE)
+inst_disch$VALUE.y <- ifelse(is.na(inst_disch$TYPE),inst_disch$VALUE.y,inst_disch$VALUE.x)
+
+dfq <- inst_disch[,c(12,17)]
+colnames(dfq) <- c("Q","pdate")
+dfq$Q <- as.numeric(dfq$Q)
+gmia_storms <- gmia_storms[which(gmia_storms$Sample.End.Date<=max(dfq$pdate) & gmia_storms$Sample.Start.Date>=min(dfq$pdate)),]
+df.dates <- gmia_storms[,c(2:3)]
+colnames(df.dates) <- c("bpdate","epdate")
+
+hydrovol_match <- findInterval(df.dates$bpdate-60*24*60,sort(dfq$pdate))
+hydrovol_match_end <- findInterval(df.dates$epdate+60*24*60,sort(dfq$pdate))
+norep <- length(hydrovol_match)
+for (i in 1:norep) {
+  beginpt <- ifelse(hydrovol_match[i]>hydrovol_match_end[i-1] || i==1,hydrovol_match[i],hydrovol_match_end[i-1]+1)
+  dfQ_temp <- dfq[beginpt:hydrovol_match_end[i],]
+  if (i==1) {dfQ <- dfQ_temp} else {dfQ <- rbind(dfQ,dfQ_temp) }
 }
 
-precip_match <- findInterval(storm_vol_load_merge$start_match,sort(outfall_precip$datetime))
-stormnum <- storm_vol_load_merge$num
-precip_match_df <- data.frame(precip_match,stormnum,stringsAsFactors=FALSE)
-precip_match_df_sub <- precip_match_df[which(precip_match>0),]
-precip_match_df_sub$value <- outfall_precip$VALUE[precip_match_df_sub$precip_match]
-colnames(precip_match_df_sub) <- c("precip_match","stormnum","precip_value")
+source("M:/NonPoint Evaluation/gmia/R/fxn_Hydrovol.R")
+hydrovol_data <- Hydrovol(dfQ, Q="Q", time="pdate", df.dates, bdate="bpdate",edate="epdate",volume="event.vol",Qmax="Qmax",duration="Eduration")
+hydrovol_data$vol.liters <- hydrovol_data$event.vol*28.31685
+#hydrovol_data <- hydrovol_data[order(hydrovol_data$bpdate),]
+#gmia_storms <- gmia_storms[order(gmia_storms$Sample.Start.Date),]
+hydrovol_data$stormnum <- gmia_storms$Storm.ID
 
-temp_match <- findInterval(storm_vol_load_merge$start_match,sort(outfall_temp$datetime))
-stormnum <- storm_vol_load_merge$num
-temp_match_df <- data.frame(temp_match,stormnum,stringsAsFactors=FALSE)
-temp_match_df_sub <- temp_match_df[which(temp_match>0),]
-temp_match_df_sub$value <- outfall_temp$VALUE[temp_match_df_sub$temp_match]
-colnames(temp_match_df_sub) <- c("temp_match","stormnum","temp_value")
+storm_qwdata <- read.delim("M:/NonPoint Evaluation/gmia/R/outfallQW.txt",header=TRUE,sep="\t",stringsAsFactors=FALSE)
+storm_qwdata <- storm_qwdata[which(nchar(storm_qwdata$SAMPLE_END_DT)>0),]
+storm_qwdata$SAMPLE_START_DT <- as.POSIXct(storm_qwdata$SAMPLE_START_DT,format="%d-%b-%y %H:%M:%S")
+storm_qwdata$SAMPLE_END_DT <- as.POSIXct(storm_qwdata$SAMPLE_END_DT,format="%d-%b-%y %H:%M:%S")
+storm_qwdata$RECORD_NO <- as.numeric(storm_qwdata$RECORD_NO)
+storm_qwdata <- merge(storm_qwdata,gmia_storms,by.x=c("RECORD_NO"),by.y="recordNo")
+# temp <- mergeNearest(storm_qwdata,dates.left="SAMPLE_START_DT",right=hydrovol_data,dates.right="bpdate",max.diff="8 hours")
+# temp2 <- mergeNearest(storm_qwdata,dates.left="SAMPLE_END_DT",right=hydrovol_data,dates.right="epdate",max.diff="8 hours")
+# storm_qwdata <- merge(storm_qwdata,temp[,c("RECORD_NO","PARM_CD","stormnum")],by=c("RECORD_NO","PARM_CD"))
+# storm_qwdata <- merge(storm_qwdata,temp2[,c("RECORD_NO","PARM_CD","stormnum")],by=c("RECORD_NO","PARM_CD"))
+#storm_qwdata <- storm_qwdata[order(storm_qwdata$SAMPLE_START_DT),]
 
-weather_match <- findInterval(storm_vol_load_merge$start_match,sort(daily_summ$date))
-stormnum <- storm_vol_load_merge$num
-weather_match_df <- data.frame(weather_match,stormnum,stringsAsFactors=FALSE)
-weather_match_df_sub <- weather_match_df[which(weather_match>0),]
-weather_match_df_sub$temp <- daily_summ$TEMP[weather_match_df_sub$weather_match]
-weather_match_df_sub$dewp <- daily_summ$DEWP[weather_match_df_sub$weather_match]
-weather_match_df_sub$slp <- daily_summ$SLP[weather_match_df_sub$weather_match]
-weather_match_df_sub$stp <- daily_summ$STP[weather_match_df_sub$weather_match]
-weather_match_df_sub$visib <- daily_summ$VISIB[weather_match_df_sub$weather_match]
+data_merge <- merge(hydrovol_data,storm_qwdata[which(storm_qwdata$PARM_CD==310),c("Storm.ID","RESULT_VA")],by.x=c("stormnum"),by.y=c("Storm.ID"),all.x=TRUE)
+colnames(data_merge) <- c("stormnum","bpdate","epdate","event.vol","Qmax","Eduration","vol.liters","BODconc")
+data_merge <- merge(data_merge,storm_qwdata[which(storm_qwdata$PARM_CD==335),c("Storm.ID","RESULT_VA")],by.x=c("stormnum"),by.y=c("Storm.ID"),all.x=TRUE)
+colnames(data_merge) <- c("stormnum","bpdate","epdate","event.vol","Qmax","Eduration","vol.liters","BODconc","CODconc")
+data_merge <- merge(data_merge,storm_qwdata[which(storm_qwdata$PARM_CD==91080),c("Storm.ID","RESULT_VA")],by.x=c("stormnum"),by.y=c("Storm.ID"),all.x=TRUE)
+colnames(data_merge) <- c("stormnum","bpdate","epdate","event.vol","Qmax","Eduration","vol.liters","BODconc","CODconc","PGconc")
+data_merge <- merge(data_merge,storm_qwdata[which(storm_qwdata$PARM_CD==91075),c("Storm.ID","RESULT_VA")],by.x=c("stormnum"),by.y=c("Storm.ID"),all.x=TRUE)
+colnames(data_merge) <- c("stormnum","bpdate","epdate","event.vol","Qmax","Eduration","vol.liters","BODconc","CODconc","PGconc","EGconc")
+data_merge$BODload <- data_merge$vol.liters*data_merge$BODconc/1000000
+data_merge$CODload <- data_merge$vol.liters*data_merge$CODconc/1000000
+data_merge$PGload <- data_merge$vol.liters*data_merge$PGconc/1000000
+data_merge$EGload <- data_merge$vol.liters*data_merge$EGconc/1000000
+data_merge$EGPGload <- data_merge$EGload+data_merge$PGload
 
-colnames(weather_match_df_sub) <- c("weather_match","stormnum","temp","dewp","slp","stp","visib")
 
-data_merge <- merge(storm_vol_load_merge,precip_match_df_sub,by.x="num",by.y="stormnum",all.x=TRUE)
-data_merge <- merge(data_merge,temp_match_df_sub,by.x="num",by.y="stormnum",all.x=TRUE)
-data_merge <- merge(data_merge,weather_match_df_sub,by.x="num",by.y="stormnum",all.x=TRUE)
+hourly_match <- mergeNearest(data_merge,dates.left="bpdate",right=hourly_sub,dates.right="datetime",max.diff="2 hours")
+hourly_match <- hourly_match[,c("stormnum","bpdate","Date","Time")]
+hourly_match_end <- mergeNearest(data_merge,dates.left="epdate",right=hourly_sub,dates.right="datetime",max.diff="2 hours")
+hourly_match_end <- hourly_match_end[,c("stormnum","epdate","Date","Time")]
+hourly_match$datetime <- as.POSIXct(paste(hourly_match$Date,formatC(hourly_match$Time,width=4,format="d",flag="0"),' '),format="%Y%m%d %H%M")
+hourly_match_end$datetime <- as.POSIXct(paste(hourly_match_end$Date,formatC(hourly_match_end$Time,width=4,format="d",flag="0"),' '),format="%Y%m%d %H%M")
+#hourly_match <- findInterval(data_merge$bpdate,sort(hourly_sub$datetime))
+#hourly_match_df <- data.frame(hourly_match,data_merge$stormnum,stringsAsFactors=FALSE)
+#hourly_match_df_sub <- hourly_match_df[which(hourly_match>0),]
+#hourly_match_end <- findInterval(data_merge$epdate,sort(hourly_sub$datetime))
+#hourly_match_end_df <- data.frame(hourly_match_end,data_merge$stormnum,stringsAsFactors=FALSE)
+#hourly_match_end_df_sub <- hourly_match_end_df[which(hourly_match_end>0),]
 
-data_merge$decYear <- paste(strftime(data_merge$End,"%Y"),".",as.POSIXlt(data_merge$End)$yday+1,sep="")
+#storms_merge <- merge(hourly_match_df,hourly_match_end_df,by=c("data_merge.stormnum"))
+storms_merge <- merge(hourly_match,hourly_match_end,by=c("stormnum"))
+storm_merge <- merge(data_merge,storms_merge,by.x=c("stormnum"),by.y=c("stormnum"))
+
+noreps <- nrow(storm_merge)
+for (i in 1:noreps) {
+  begin <- which(hourly_sub$datetime==storm_merge$datetime.x[i],arr.ind=TRUE)
+  end <- which(hourly_sub$datetime==storm_merge$datetime.y[i],arr.ind=TRUE)
+  storm_merge$mean_temp[i] <- mean(hourly_sub$temp[begin:end],na.rm=TRUE)
+  storm_merge$max_temp[i] <- max(hourly_sub$temp[begin:end],na.rm=TRUE)
+  storm_merge$min_temp[i] <- min(hourly_sub$temp[begin:end],na.rm=TRUE)
+  storm_merge$prcp_sum[i] <- sum(as.numeric(hourly_sub$precip1dpth[begin:end]),na.rm=TRUE)
+  storm_merge$snowwteq_sum[i] <- sum(as.numeric(hourly_sub$snowwteq[begin:end]),na.rm=TRUE)
+  storm_merge$snowacc_max[i] <- max(as.numeric(hourly_sub$snowacc1dpth[begin:end]))
+}
+
+data_merge <- merge(storm_merge,gmia_application[,c(1,4:7)],by.x=c("stormnum"),by.y=c("Event.number"),all.x=TRUE)
+data_merge <- data_merge[,c(1:3,5,12:16,25:28,31:34)]
+colnames(data_merge) <- c("stormnum","bpdate","epdate","Qmax","BODload","CODload","PGload","EGload","EGPGload","mean_temp","max_temp","min_temp","prcp_sum","mmprcp_deice","prcp_desc","kgGlycol","glycolOUT")
+data_merge$mmprcp_deice <- as.numeric(data_merge$mmprcp_deice)
+data_merge$kgGlycol <- as.numeric(data_merge$kgGlycol)
+data_merge$glycolOUT <- as.numeric(data_merge$glycolOUT)
+data_merge$decYear <- paste(strftime(data_merge$bpdate,"%Y"),".",as.POSIXlt(data_merge$bpdate)$yday+1,sep="")
 data_merge$sinDY <- sin(as.numeric(data_merge$decYear)*2*pi)
 data_merge$cosDY <- cos(as.numeric(data_merge$decYear)*2*pi)
 data_sub <- data_merge
 data_sub$remark <- ""
-data_sub$precip_value <- as.numeric(data_sub$precip_value)
-data_sub$temp_value <- as.numeric(data_sub$temp_value)
-data_sub$stp <- as.numeric(data_sub$stp)
 data_sub$decYear <- as.numeric(data_sub$decYear)
 
 DTMaxCols <- na.omit(data_sub)
@@ -127,16 +209,24 @@ data_sub <- na.omit(DT)
 DT <- data_sub[,c("TPLoad",names(DTMaxRows))]
 data_sub <- na.omit(DT)
 
+
+
 # set necessary site information and inputs to step-wise regression
 library(USGSwsQWSR)
 #keepCens <- keepAll[-which(keepAll %in% "TPLoad")]
 #data_sub_cens <- importQW(data_sub,keepCens,"TPLoad","remark","",0.005,"User","tons","Unk","","00665","TPLoading")
-data_sub_cens <- importQW(data_sub,c("precip_value","temp_value","temp","dewp","slp","stp","visib","sinDY","cosDY","decYear"),"TPLoad","remark","",0.005,"User","tons","Unk","","91080","TPLoading")
+data_sub <- data_sub[which(!is.na(data_sub$BODload)),]
+data_sub_cens <- importQW(data_sub,c("Qmax","mean_temp","max_temp","min_temp","prcp_sum","mmprcp_deice","kgGlycol"),"BODload","remark","",0.005,"User","tons","Unk","","00310","BODLoading")
+data_sub <- data_sub[which(!is.na(data_sub$CODload)),]
+data_sub_cens <- importQW(data_sub,c("Qmax","mean_temp","max_temp","min_temp","prcp_sum","mmprcp_deice","kgGlycol"),"CODload","remark","",0.005,"User","tons","Unk","","00335","CODLoading")
+
+
 siteName <- "Outfall"
 siteNo <- '040871475'
 siteINFO <-  getSiteFileData(siteNo, interactive=FALSE)
 # name of value column in data_sub_cens object
-investigateResponse <- "TPLoading"
+investigateResponse <- "BODLoading"
+investigateResponse <- "CODLoading"
 # choose 'normal' or 'lognormal' distribution for data
 transformResponse <- "lognormal"
 
@@ -186,14 +276,3 @@ dev.off()
 fileToSave <- paste(pathToSave,"/",investigateResponse,"_steps.csv",sep="")
 write.table(steps, fileToSave, row.names=FALSE, sep=",") 
 ##########################################################
-
-
-
-
-
-
-
-
-
-
-gmia_hourly_global <- read.delim("D:/JLTData/gmia/hourly_global.txt",stringsAsFactors=FALSE)
