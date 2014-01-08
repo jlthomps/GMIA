@@ -82,6 +82,14 @@ hourly_sub$snowacc4dpth <- ifelse(hourly_sub$snowacc4dpth==999,'',hourly_sub$sno
 # hourly_sub$prcp15min4mm <- ifelse(hourly_sub$prcp15min4mm==999.9,'',hourly_sub$prcp15min4mm)
 hourly_sub$datetime <- as.POSIXct(paste(hourly_sub$Date,formatC(hourly_sub$Time,width=4,format="d",flag="0"),' '),format="%Y%m%d %H%M")
 
+#test hourly_sub daily aggregation vs daily_summ
+hourly_agg_temp <- aggregate(hourly_sub$temp,list(hourly_sub$Date),mean)
+hourly_agg_dewpt <- aggregate(hourly_sub$dewpt,list(hourly_sub$Date),mean)
+hourly_agg_precip <- aggregate(as.numeric(hourly_sub$precip1dpth),list(hourly_sub$Date),sum)
+hourly_agg_snowwteq <- aggregate(as.numeric(hourly_sub$snowwteq),list(hourly_sub$Date),sum)
+hourly_agg_snowacc1dpth <- aggregate(as.numeric(hourly_sub$snowacc1dpth),list(hourly_sub$Date),sum)
+hourly_agg_snowaccmax <- aggregate(as.numeric(hourly_sub$snowacc1dpth),list(hourly_sub$Date),max)
+
 inst_disch <- getRDB1Data("M:/NonPoint Evaluation/gmia/R/outfall00060.rdb",asDateTime=TRUE)
 inst_disch$datetime <- as.POSIXct(paste(inst_disch$DATE,inst_disch$TIME,sep=' '),format="%Y%m%d %H%M%S")
 
