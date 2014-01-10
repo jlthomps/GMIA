@@ -1,46 +1,19 @@
 Airport 
 
-instantaneous discharge sometimes ice affected at st. luke's, outfall
-qualifer for event ice effected - daily values will be estimated
-loads - also try COD
-adaps discharge - mean and peak for event
-snow depth - beginning and end of event
 
 
-End goal: to try to predict propylene glycol load based on forcing factors, using a regression (probably step-wise). Determine if there is/has 
-been a significant change in loading due to management practices.
-possible forcing factors: application amount/dilution factor, weather, precip type and amount, air temperature during de-icing event, 
-(timing of de-icing events and number of planes, no data this necessarily, may need to infer)
-respose variables: COD and BOD (surrogates for combo of all de-icers), all de-icers (pavement de-icers, propylene glycol, ethylene glycol), 
-but some of these are more accurate than others.
+End goal: to try to predict propylene glycol load based on forcing factors, using a regression (probably step-wise). Determine if there is/has been a significant change in loading due to management practices.
+possible forcing factors: application amount/dilution factor, weather, precip type and amount, air temperature during de-icing event, (timing of de-icing events and number of planes, no data this necessarily, may need to infer)
+respose variables: COD and BOD (surrogates for combo of all de-icers), all de-icers (pavement de-icers, propylene glycol, ethylene glycol), but some of these are more accurate than others.
 
-Background: monitoring began in 1996. One station above airport, not necessary to use for this study. Numbers are so low (background levels) w/o 
-de-icer that we don't need to subtract out. Two stations at airport: Outfall 7, big site that drains most of the airport de-icing runoff; cargo 
-site drains just a concentrated loading area. One station downstream from the airport: St. Luke's, results of a tracer study are used to calculate 
-lag to this site for de-icing events. Approx 6 events per year. Defining an 'event' will be part of the difficulty - airport info, air temp, precip, 
-etc are options. Used to use a mix of propylene glycol and ethylene glycol, but switched to all propylene glycol. don't have data for degradates, will 
-ignore that for this study. For management practices, they have a bladder system that is supposed to capture runoff from the stream and suck it up. 
-
-define two periods during event - whole event, snow/ice portion of event
-what precip conditions explain glycol loadings
-use formula in event_notes_2013.xls for travel to St Luke's to determine start and end of event at St Luke's, relative to Outfall 7
-NWIS unit values - check for codes for ice-affected
-talk to Laura about Austin's GLRI regressions with ice affect
-if needed, could look at daily values to determine which are ice-affected
-also have snowmelt events - no precip, but sampled to look at storage of glycol in snow
-ultimately just loads for given events is what is needed for regression
-use hydrovol function to determine volumnes for St. Luke's (Outfall 7 and Cargo already computed)
+Background: monitoring began in 1996. One station above airport, not necessary to use for this study. Numbers are so low (background levels) w/o de-icer that we don't need to subtract out. Two stations at airport: Outfall 7, big site that drains most of the airport de-icing runoff; cargo site drains just a concentrated loading area. One station downstream from the airport: St. Luke's, results of a tracer study are used to calculate lag to this site for de-icing events. Approx 6 events per year. Defining an 'event' will be part of the difficulty - airport info, air temp, precip, etc are options. Used to use a mix of propylene glycol and ethylene glycol, but switched to all propylene glycol. don't have data for degradates, will ignore that for this study. For management practices, they have a bladder system that is supposed to capture runoff from the stream and suck it up. 
 
 Questions:
 management of de-icer runoff: when were changes made? more than one date? define "before" and "after"
 how to infer timing of de-icing events: airport reporting, air temperature, precip type and amount, other?
-how to infer load of de-icers during an event: airport reporting, number of flights at event time, size of planes, percent dilution 
-(either reported or inferred from air temp), other?
+how to infer load of de-icers during an event: airport reporting, number of flights at event time, size of planes, percent dilution (either reported or inferred from air temp), other?
 how to define de-icing events for qw samples: hydrograph, same questions as above
-defining event start/etc. there is the start and end of a sampling event, and of a de-icing event, and of a precip event. imp't question is, 
-how far back to go from the sampling event start, and how to decide which precip is imp't for loads/etc. look at nws hourly data for descriptions 
-as far as rain vs snow. can also use temp to try and infer. steve's rainmaker r function does some of this offset (goes back until hits a specified 
-amount of dry period to define event start), could be expanded to look for rain vs snow.
+defining event start/etc. there is the start and end of a sampling event, and of a de-icing event, and of a precip event. imp't question is, how far back to go from the sampling event start, and how to decide which precip is imp't for loads/etc. look at nws hourly data for descriptions as far as rain vs snow. can also use temp to try and infer. steve's rainmaker r function does some of this offset (goes back until hits a specified amount of dry period to define event start), could be expanded to look for rain vs snow.
 http://w1.weather.gov/data/obhistory/KMKE.html
 http://www.crh.noaa.gov/data/obhistory/KMKE.html
 
@@ -57,8 +30,7 @@ Steps:
 2) experiment with a few different ways to define de-icing events (temp, precip type, airport info, etc)
 3) develop regression for whole period of data, experiment with forcing factors
 4) define "before" and "after" periods for de-icer management
-5) compare residuals for regression for "before" and "after" periods and see if they sort into a couple groups. can test significance of difference 
-between these groups using Wilcox or T-test
+5) compare residuals for regression for "before" and "after" periods and see if they sort into a couple groups. can test significance of difference between these groups using Wilcox or T-test
 
 COD pcode 00335
 BOD pcode 00310
@@ -123,8 +95,7 @@ Data from NCDC:
 Precip
 15-minute - NA
 Hourly Precip - acquired
-**Hourly Global - acquired** gives hourly wind, sky condition, visibility, temp, precip, dewpoint, atm pressure, snow depth, snow accumulation, weather obs, 
-cloud data, etc  - seems to match local data hourly obs found by steve
+**Hourly Global - acquired** gives hourly wind, sky condition, visibility, temp, precip, dewpoint, atm pressure, snow depth, snow accumulation, weather obs, cloud data, etc  - seems to match local data hourly obs found by steve
 GHCN Daily CoCoRaHS - NA
 GHCN Daily GHCN - acquired
 GHCN Daily WMO - NA
@@ -141,5 +112,4 @@ Global Summary of the Day - acquired
 Climate Reference Network - NA
 Local Climatological Data - available a month at a time
 
-Question: local data hourly observations table has hourly sky conditions, visibility, dry bulb temp, wet bulb temp, dew point temp, rel humidity, 
-wind speed, wind direction, wind gusts, station pressure, precip total, altimeter. does anything else have this?
+Question: local data hourly observations table has hourly sky conditions, visibility, dry bulb temp, wet bulb temp, dew point temp, rel humidity, wind speed, wind direction, wind gusts, station pressure, precip total, altimeter. does anything else have this?
