@@ -23,47 +23,93 @@ EndDate <- '2012-10-01'
 
 # set necessary site information and inputs to step-wise regression
 library(USGSwsQWSR)
+
+siteName <- "Outfall_mmprcp_deice"
+siteNo <- '040871475'
+siteINFO <-  getSiteFileData(siteNo, interactive=FALSE)
 #BODload
 data_sub <- data_sub[which(!is.na(data_sub$BODload)),]
 data_sub <- data_sub[which(!is.na(data_sub$kgGlycol)),]
 data_sub_cens <- importQW(data_sub,c("Qmax","Eduration","mean_temp","max_temp","min_temp","prcp_sum","dwpt_mean","snowdp_sum","mmprcp_deice","kgGlycol"),"BODload","remark","",0.005,"User","tons","Unk","","00310","BODLoading")
-siteName <- "Outfall_mmprcp_deice"
-siteNo <- '040871475'
-siteINFO <-  getSiteFileData(siteNo, interactive=FALSE)
 investigateResponse <- "BODLoading"
 #CODload
 data_sub <- data_sub[which(!is.na(data_sub$CODload)),]
 data_sub <- data_sub[which(!is.na(data_sub$kgGlycol)),]
 data_sub_cens <- importQW(data_sub,c("Qmax","Eduration","mean_temp","max_temp","min_temp","prcp_sum","dwpt_mean","snowdp_sum","mmprcp_deice","kgGlycol"),"CODload","remark","",0.005,"User","tons","Unk","","00310","CODLoading")
-siteName <- "Outfall_mmprcp_deice"
-siteNo <- '040871475'
-siteINFO <-  getSiteFileData(siteNo, interactive=FALSE)
 investigateResponse <- "CODLoading"
 #PGload
 data_sub <- data_sub[which(!is.na(data_sub$PGload)),]
 data_sub <- data_sub[which(!is.na(data_sub$kgGlycol)),]
 data_sub_cens <- importQW(data_sub,c("Qmax","Eduration","mean_temp","max_temp","min_temp","prcp_sum","dwpt_mean","snowdp_sum","mmprcp_deice","kgGlycol"),"PGload","remark","",0.005,"User","tons","Unk","","00310","PGLoading")
-siteName <- "Outfall_mmprcp_deice"
-siteNo <- '040871475'
-siteINFO <-  getSiteFileData(siteNo, interactive=FALSE)
 investigateResponse <- "PGLoading"
 #EGload
 data_sub <- data_sub[which(!is.na(data_sub$EGload)),]
 data_sub <- data_sub[which(!is.na(data_sub$kgGlycol)),]
 data_sub_cens <- importQW(data_sub,c("Qmax","Eduration","mean_temp","max_temp","min_temp","prcp_sum","dwpt_mean","snowdp_sum","mmprcp_deice","kgGlycol"),"EGload","remark","",0.005,"User","tons","Unk","","00310","EGLoading")
-siteName <- "Outfall_mmprcp_deice"
-siteNo <- '040871475'
-siteINFO <-  getSiteFileData(siteNo, interactive=FALSE)
 investigateResponse <- "EGLoading"
 #EGPGload
 data_sub <- data_sub[which(!is.na(data_sub$EGPGload)),]
 data_sub <- data_sub[which(!is.na(data_sub$kgGlycol)),]
 data_sub_cens <- importQW(data_sub,c("Qmax","Eduration","mean_temp","max_temp","min_temp","prcp_sum","dwpt_mean","snowdp_sum","mmprcp_deice","kgGlycol"),"EGPGload","remark","",0.005,"User","tons","Unk","","00310","EGPGLoading")
-siteName <- "Outfall_mmprcp_deice"
+investigateResponse <- "EGPGLoading"
+##################################################
+siteName <- "Outfall_noQmax"
 siteNo <- '040871475'
 siteINFO <-  getSiteFileData(siteNo, interactive=FALSE)
+#BODload
+data_sub <- data_sub[which(!is.na(data_sub$BODload)),]
+data_sub <- data_sub[which(!is.na(data_sub$kgGlycol)),]
+data_sub_cens <- importQW(data_sub,c("Qmax","Eduration","mean_temp","max_temp","min_temp","prcp_sum","dwpt_mean","snowdp_sum","kgGlycol"),"BODload","remark","",0.005,"User","tons","Unk","","00310","BODLoading")
+investigateResponse <- "BODLoading"
+#CODload
+data_sub <- data_sub[which(!is.na(data_sub$CODload)),]
+data_sub <- data_sub[which(!is.na(data_sub$kgGlycol)),]
+data_sub_cens <- importQW(data_sub,c("Qmax","Eduration","mean_temp","max_temp","min_temp","prcp_sum","dwpt_mean","snowdp_sum","kgGlycol"),"CODload","remark","",0.005,"User","tons","Unk","","00310","CODLoading")
+investigateResponse <- "CODLoading"
+#PGload
+data_sub <- data_sub[which(!is.na(data_sub$PGload)),]
+data_sub <- data_sub[which(!is.na(data_sub$kgGlycol)),]
+data_sub_cens <- importQW(data_sub,c("Qmax","Eduration","mean_temp","max_temp","min_temp","prcp_sum","dwpt_mean","snowdp_sum","kgGlycol"),"PGload","remark","",0.005,"User","tons","Unk","","00310","PGLoading")
+investigateResponse <- "PGLoading"
+#EGload
+data_sub <- data_sub[which(!is.na(data_sub$EGload)),]
+data_sub <- data_sub[which(!is.na(data_sub$kgGlycol)),]
+data_sub_cens <- importQW(data_sub,c("Qmax","Eduration","mean_temp","max_temp","min_temp","prcp_sum","dwpt_mean","snowdp_sum","kgGlycol"),"EGload","remark","",0.005,"User","tons","Unk","","00310","EGLoading")
+investigateResponse <- "EGLoading"
+#EGPGload
+data_sub <- data_sub[which(!is.na(data_sub$EGPGload)),]
+data_sub <- data_sub[which(!is.na(data_sub$kgGlycol)),]
+data_sub_cens <- importQW(data_sub,c("Qmax","Eduration","mean_temp","max_temp","min_temp","prcp_sum","dwpt_mean","snowdp_sum","kgGlycol"),"EGPGload","remark","",0.005,"User","tons","Unk","","00310","EGPGLoading")
 investigateResponse <- "EGPGLoading"
-
+##################################################
+siteName <- "Outfall_noQmax_snowmelt"
+siteNo <- '040871475'
+siteINFO <-  getSiteFileData(siteNo, interactive=FALSE)
+#BODload
+data_sub <- data_sub[which(!is.na(data_sub$BODload)),]
+data_sub <- data_sub[which(!is.na(data_sub$kgGlycol)),]
+data_sub_cens <- importQW(data_sub,c("Eduration","mean_temp","max_temp","min_temp","prcp_sum","dwpt_mean","snowdp_sum","kgGlycol"),"BODload","remark","",0.005,"User","tons","Unk","","00310","BODLoading")
+investigateResponse <- "BODLoading"
+#CODload
+data_sub <- data_sub[which(!is.na(data_sub$CODload)),]
+data_sub <- data_sub[which(!is.na(data_sub$kgGlycol)),]
+data_sub_cens <- importQW(data_sub,c("Eduration","mean_temp","max_temp","min_temp","prcp_sum","dwpt_mean","snowdp_sum","kgGlycol"),"CODload","remark","",0.005,"User","tons","Unk","","00310","CODLoading")
+investigateResponse <- "CODLoading"
+#PGload
+data_sub <- data_sub[which(!is.na(data_sub$PGload)),]
+data_sub <- data_sub[which(!is.na(data_sub$kgGlycol)),]
+data_sub_cens <- importQW(data_sub,c("Eduration","mean_temp","max_temp","min_temp","prcp_sum","dwpt_mean","snowdp_sum","kgGlycol"),"PGload","remark","",0.005,"User","tons","Unk","","00310","PGLoading")
+investigateResponse <- "PGLoading"
+#EGload
+data_sub <- data_sub[which(!is.na(data_sub$EGload)),]
+data_sub <- data_sub[which(!is.na(data_sub$kgGlycol)),]
+data_sub_cens <- importQW(data_sub,c("Eduration","mean_temp","max_temp","min_temp","prcp_sum","dwpt_mean","snowdp_sum","kgGlycol"),"EGload","remark","",0.005,"User","tons","Unk","","00310","EGLoading")
+investigateResponse <- "EGLoading"
+#EGPGload
+data_sub <- data_sub[which(!is.na(data_sub$EGPGload)),]
+data_sub <- data_sub[which(!is.na(data_sub$kgGlycol)),]
+data_sub_cens <- importQW(data_sub,c("Eduration","mean_temp","max_temp","min_temp","prcp_sum","dwpt_mean","snowdp_sum","kgGlycol"),"EGPGload","remark","",0.005,"User","tons","Unk","","00310","EGPGLoading")
+investigateResponse <- "EGPGLoading"
 # choose 'normal' or 'lognormal' distribution for data
 transformResponse <- "lognormal"
 
@@ -71,7 +117,6 @@ pathToSave <- paste("/Users/jlthomps/Documents/R/GMIA/",siteName,sep="")
 
 ##########################################################
 # Preliminary Assessment Plots:
-# pdf(paste(pathToSave,"/InitialQQGraphs",investigateResponse,".pdf",sep=""))
 pdf(paste(pathToSave,"/",investigateResponse,"_InitialQQGraphs.pdf",sep=""))
 plotQQTransforms(data_sub_cens,investigateResponse)
 predictVariableScatterPlots(data_sub_cens,investigateResponse)

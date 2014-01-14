@@ -1,36 +1,52 @@
 Airport 
 
+1/14/2014 status:
+Have run many different versions of regression for storms at Outfall site joined to daily loads:
+* all samples w/ load data for chosen (BOD, COD, EG, PG, EGPG), all with ice affected omitted, all using mmprcp from deicing data
+* all precip (no 'melt' in description), all precip w/ ice affected omitted
+* all snowmelt, all snowmelt w/ ice affected omitted
+* all w/o Qmax, all precip w/o Qmax, all snowmelt w/o Qmax
 
+These are all w/ daily joined by event start and end dt, match nearest w/in 36 hours, use all of those rows to find mean, max and min temp, prcp sum, 
+dwpt mean and snowdp sum
+These are all run w/ total glycol application info, not split out per site
 
-End goal: to try to predict propylene glycol load based on forcing factors, using a regression (probably step-wise). Determine if there is/has been a significant change in loading due to management practices.
-possible forcing factors: application amount/dilution factor, weather, precip type and amount, air temperature during de-icing event, (timing of de-icing events and number of planes, no data this necessarily, may need to infer)
-respose variables: COD and BOD (surrogates for combo of all de-icers), all de-icers (pavement de-icers, propylene glycol, ethylene glycol), but some of these are more accurate than others.
+Next/further work:
+Finish comparison of hourly/daily - hard to tell because of units issues
+Run regressions with hourly data, similar to those done w/ Daily
+Need to find out when the breakpoint is between no management system and added containment, then split into two periods
+Need to run other sites - Cargo and St. Lukes
+Need to re-run all with split out glycol application info
+Try different ways to join data:
+* daily - not use whole day? maybe part of day based on hours? but don't know when snow happened necessarily? 
+* hourly - anything other than just straight event begin and end? 
+* try difference in snow depth and possible conversion to snow water equivalent
+* event start/end vs application start/end, precip start/end; maybe use rain vs snow description, adapt rainmaker function to look for rain/snow
+* definition of deicing event - temp, precip type, airport info, etc
+Document data used - QWDATA, airport figures, NCDC weather, ADAPs discharge, etc
+Compare residuals for regression for "before" and "after" periods and see if they sort into a couple groups. can test significance of difference between 
+these groups using Wilcox or T-test
+Maybe look into local climatological data? 
 
-Background: monitoring began in 1996. One station above airport, not necessary to use for this study. Numbers are so low (background levels) w/o de-icer that we don't need to subtract out. Two stations at airport: Outfall 7, big site that drains most of the airport de-icing runoff; cargo site drains just a concentrated loading area. One station downstream from the airport: St. Luke's, results of a tracer study are used to calculate lag to this site for de-icing events. Approx 6 events per year. Defining an 'event' will be part of the difficulty - airport info, air temp, precip, etc are options. Used to use a mix of propylene glycol and ethylene glycol, but switched to all propylene glycol. don't have data for degradates, will ignore that for this study. For management practices, they have a bladder system that is supposed to capture runoff from the stream and suck it up. 
+End goal: to try to predict propylene glycol load based on forcing factors, using a regression (probably step-wise). Determine if there is/has been a 
+significant change in loading due to management practices.possible forcing factors: application amount/dilution factor, weather, precip type and amount, 
+air temperature during de-icing event, (timing of de-icing events and number of planes, no data this necessarily, may need to infer) respose variables: 
+COD and BOD (surrogates for combo of all de-icers), all de-icers (pavement de-icers, propylene glycol, ethylene glycol), but some of these are more 
+accurate than others.
 
-Questions:
-management of de-icer runoff: when were changes made? more than one date? define "before" and "after"
-how to infer timing of de-icing events: airport reporting, air temperature, precip type and amount, other?
-how to infer load of de-icers during an event: airport reporting, number of flights at event time, size of planes, percent dilution (either reported or inferred from air temp), other?
-how to define de-icing events for qw samples: hydrograph, same questions as above
-defining event start/etc. there is the start and end of a sampling event, and of a de-icing event, and of a precip event. imp't question is, how far back to go from the sampling event start, and how to decide which precip is imp't for loads/etc. look at nws hourly data for descriptions as far as rain vs snow. can also use temp to try and infer. steve's rainmaker r function does some of this offset (goes back until hits a specified amount of dry period to define event start), could be expanded to look for rain vs snow.
-http://w1.weather.gov/data/obhistory/KMKE.html
-http://www.crh.noaa.gov/data/obhistory/KMKE.html
+Background: monitoring began in 1996. One station above airport, not necessary to use for this study. Numbers are so low (background levels) w/o de-icer 
+that we don't need to subtract out. Two stations at airport: Outfall 7, big site that drains most of the airport de-icing runoff; cargo site drains just 
+a concentrated loading area. One station downstream from the airport: St. Luke's, results of a tracer study are used to calculate lag to this site for 
+de-icing events. Approx 6 events per year. Defining an 'event' will be part of the difficulty - airport info, air temp, precip, etc are options. Used to 
+use a mix of propylene glycol and ethylene glycol, but switched to all propylene glycol. don't have data for degradates, will ignore that for this study. 
+For management practices, they have a bladder system that is supposed to capture runoff from the stream and suck it up. 
+
 
 Data: 
 //projects/nonpoint/gmia/R/ for preliminary weather data and R scripts for dealing with it
 //projects/nonpoint/gmia/WQ2013/ for data pulled from NWIS QWData and calculated loads
-QW - much is ready, Troy will work on calculating loads for remaining events
-weather - some NWIS, some NWS, need to try and get hourly air temp and precip as well as daily summaries
-check out NCDC to see what else is available and may be used as a forcing variable
-airport application data - have some of this, need more. they measure depth if melted for precip
-
-Steps:
-1) take a look at available data, determine holes, work with Troy on merging of data
-2) experiment with a few different ways to define de-icing events (temp, precip type, airport info, etc)
-3) develop regression for whole period of data, experiment with forcing factors
-4) define "before" and "after" periods for de-icer management
-5) compare residuals for regression for "before" and "after" periods and see if they sort into a couple groups. can test significance of difference between these groups using Wilcox or T-test
+http://w1.weather.gov/data/obhistory/KMKE.html
+http://www.crh.noaa.gov/data/obhistory/KMKE.html
 
 COD pcode 00335
 BOD pcode 00310
@@ -95,7 +111,8 @@ Data from NCDC:
 Precip
 15-minute - NA
 Hourly Precip - acquired
-**Hourly Global - acquired** gives hourly wind, sky condition, visibility, temp, precip, dewpoint, atm pressure, snow depth, snow accumulation, weather obs, cloud data, etc  - seems to match local data hourly obs found by steve
+**Hourly Global - acquired** gives hourly wind, sky condition, visibility, temp, precip, dewpoint, atm pressure, snow depth, snow accumulation, 
+weather obs, cloud data, etc  - seems to match local data hourly obs found by steve
 GHCN Daily CoCoRaHS - NA
 GHCN Daily GHCN - acquired
 GHCN Daily WMO - NA
@@ -112,4 +129,5 @@ Global Summary of the Day - acquired
 Climate Reference Network - NA
 Local Climatological Data - available a month at a time
 
-Question: local data hourly observations table has hourly sky conditions, visibility, dry bulb temp, wet bulb temp, dew point temp, rel humidity, wind speed, wind direction, wind gusts, station pressure, precip total, altimeter. does anything else have this?
+Question: local data hourly observations table has hourly sky conditions, visibility, dry bulb temp, wet bulb temp, dew point temp, rel humidity, 
+wind speed, wind direction, wind gusts, station pressure, precip total, altimeter. does anything else have this?
