@@ -5,6 +5,10 @@ ParameterCd <- '00060'
 StartDate <- '1997-10-01'
 EndDate <- '2012-10-01'
 
+# Run hourly_daily_checks.R
+# Run disch_iceaffect_omit.R or disch_iceaffect_corr.R
+# Run data_merge_daily.R
+
 # DTMaxCols <- na.omit(data_sub)
 # DTMaxRows <- data_sub[,colSums(is.na(data_sub)) <= nrow(data_sub)*0.5] 
 # DTMaxRows <- na.omit(DTMaxRows)
