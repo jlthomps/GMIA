@@ -26,12 +26,12 @@ EndDate <- '2012-10-01'
 # data_sub <- na.omit(DT)
 
 # set necessary site information and inputs to step-wise regression
-library(USGSwsQWSR)
+library(GSqwsr)
 #BODload
 data_sub <- data_sub[which(!is.na(data_sub$BODload)),]
 data_sub <- data_sub[which(!is.na(data_sub$kgGlycol)),]
-data_sub_cens <- importQW(data_sub,c("Qmax","Eduration","mean_temp","max_temp","min_temp","prcp_sum","dwpt_mean","snowdp_sum","mmprcp_deice","kgGlycol"),"BODload","remark","",0.005,"User","tons","Unk","","00310","BODLoading")
-siteName <- "Outfall_mmprcp_deice"
+data_sub_cens <- importQW(data_sub,c("Qmax","Eduration","mean_temp","max_temp","min_temp","prcp_sum","kgGlycol"),"BODload","remark","",0.005,"User","tons","Unk","","00310","BODLoading")
+siteName <- "Outfall"
 siteNo <- '040871475'
 siteINFO <-  getSiteFileData(siteNo, interactive=FALSE)
 investigateResponse <- "BODLoading"
@@ -71,7 +71,7 @@ investigateResponse <- "EGPGLoading"
 # choose 'normal' or 'lognormal' distribution for data
 transformResponse <- "lognormal"
 
-pathToSave <- paste("/Users/jlthomps/Documents/R/GMIA/",siteName,sep="")
+pathToSave <- paste("/Users/jlthomps/Documents/R/GMIA_hourly/",siteName,sep="")
 
 ##########################################################
 # Preliminary Assessment Plots:

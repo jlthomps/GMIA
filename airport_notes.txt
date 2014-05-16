@@ -1,5 +1,29 @@
 Airport 
 
+5/15/14
+Now have hourly data merged with storm events. ice affected corrected. all data saved as workspace gmia_merged_data_hourly.RData.
+
+Next:
+set up to run for COD, BOD and EG+PG
+run all data together, then split out residuals into different groups (different year breakpoints for pre/post)
+right now using ice-affected corrected, which seems to be working fine. could switch to omitted
+for EP+PG - need to check on how censored is working if one value is censored and one not. maybe add after running importQW?
+for EG+PG from Steve:
+ It would make sense to compute loads for both first. Use a general rule to follow when the values are censored (need to choose and estimate rather than assigning a censored load). Then add the loads
+I have an idea for estimating....Develop a regression between COD and EG and between COD and PG. When values of PG or EG are censored, use COD to estimate them.
+kgGlycol as forcing factor - check w/ galGlycol to make sure it's just a conversion (not total gallons product)
+Plots of residuals:
+pdf of several plots, with different color points for pre and post, bunch of graphs setting different marks for pre/post
+boxplot of residuals pre and post
+wilcox and/or t-test between final pre and post residuals
+early june present to dnr
+pulling bod, cod, eg, pg from qwdata - storm id is in scmfl field
+daily snow - take snow depth differences from daily summary weather data and merge into hourly
+Cargo and St. Lukes - figure out travel times and then run same regressions for those
+final comparison - amount measured at Outfall and Cargo vs how much makes it to St. Lukes
+
+
+
 1/14/2014 status:
 Have run many different versions of regression for storms at Outfall site joined to daily loads:
 * all samples w/ load data for chosen (BOD, COD, EG, PG, EGPG), all with ice affected omitted, all using mmprcp from deicing data

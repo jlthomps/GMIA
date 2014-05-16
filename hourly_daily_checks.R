@@ -1,11 +1,8 @@
 library(dataRetrieval)
 library(USGSwsBase)
-siteNumber <- '040871475'
-ParameterCd <- '00060'
-StartDate <- '1997-10-01'
-EndDate <- '2012-10-01'
 
-daily_summ <- read.csv("M:/NonPoint Evaluation/gmia/R/global_daily_summary_CDO2400066445620.txt",header=TRUE,stringsAsFactors=FALSE,strip.white=TRUE)
+daily_summ <- read.csv("C:/Users/jlthomps/Desktop/git/GMIA/global_daily_summary_CDO2400066445620.txt",header=TRUE,stringsAsFactors=FALSE,strip.white=TRUE)
+#daily_summ <- read.csv("/Users/jlthomps/GMIA/global_daily_summary_CDO2400066445620.txt",header=TRUE,stringsAsFactors=FALSE,strip.white=TRUE)
 daily_summ$FRSHTT <- sprintf("%06d",daily_summ$FRSHTT)
 daily_summ$date <- strptime(daily_summ$YEARMODA,format="%Y%m%d")
 daily_summ$max_flg <- ifelse(substr(daily_summ$MAX,nchar(daily_summ$MAX),nchar(daily_summ$MAX)+1)=='*','*','')
@@ -33,7 +30,9 @@ daily_summ$hail <- substr(daily_summ$FRSHTT,4,4)
 daily_summ$thunder <- substr(daily_summ$FRSHTT,5,5)
 daily_summ$tornado <- substr(daily_summ$FRSHTT,6,6)
 
-hourly_data <- read.delim("M:/NonPoint Evaluation/gmia/R/hourly_global.txt",header=FALSE,stringsAsFactors=FALSE,skip=2,strip.white=TRUE,comment.char="",sep=",")
+hourly_data <- read.delim("C:/Users/jlthomps/Desktop/git/GMIA/hourly_global.txt",header=FALSE,stringsAsFactors=FALSE,skip=2,strip.white=TRUE,comment.char="",sep=",")
+#hourly_data <- read.delim("/Users/jlthomps/GMIA/hourly_global.txt",header=FALSE,stringsAsFactors=FALSE,skip=2,strip.white=TRUE,comment.char="",sep=",")
+
 hourly_sub <- hourly_data[,c(1:8,22:23,24:25,26:27,28:49,130:135,136:151,162:189)]
 colnames(hourly_sub) <- c("site_name","USAF","NCDC","Date","Time","I","Type","QCP","temp","tempQ","dewpt","dewptq","atmpr","atmprq",
                           "precip1hr","precip1dpth","precip1cond","precip1q","precip2hr","precip2dpth","precip2cond","precip2q",
@@ -84,10 +83,32 @@ hourly_sub$prcp15min3mm <- ifelse(hourly_sub$prcp15min3mm==999.9,'',hourly_sub$p
 hourly_sub$prcp15min4mm <- ifelse(hourly_sub$prcp15min4mm==999.9,'',hourly_sub$prcp15min4mm)
 hourly_sub$datetime <- as.POSIXct(paste(hourly_sub$Date,formatC(hourly_sub$Time,width=4,format="d",flag="0"),' '),format="%Y%m%d %H%M")
 
+daily_summSub <- daily_summ[which(daily_summ$date<strptime("1991-01-01","%Y-%m-%d")),]
+hourly_subSub <- hourly_sub[which(floor_date(hourly_sub$datetime,unit="day")<max(floor_date(daily_summSub$date))),]
+
+#daily_summOne <- daily_summ[which(daily_summ$date<strptime("1990-10-02","%Y-%m-%d")),]
+#hourly_test <- hourly_sub[1:24,]
+#hourly_test$date <- floor_date(hourly_test$datetime,unit="day")
+#hourly_subOne <- hourly_sub[which(floor_date(hourly_sub$datetime,unit="day")<=max(floor_date(daily_summOne$date,unit="day"))),]
+#hourly_subOne <- hourly_subOne[,c(1:5,)]
+
 # test hourly_sub daily aggregation vs daily_summ
-hourly_agg_temp <- aggregate(as.numeric(hourly_sub$temp)*1.8+32,list(hourly_sub$Date),mean,na.rm=TRUE)
-hourly_agg_dewpt <- aggregate(as.numeric(hourly_sub$dewpt)*1.8+32,list(hourly_sub$Date),mean,na.rm=TRUE)
-hourly_agg_precip <- aggregate(as.numeric(hourly_sub$precip1dpth)/10/25.4,list(hourly_sub$Date),sum,na.rm=TRUE)
-hourly_agg_snowwteq <- aggregate(as.numeric(hourly_sub$snowwteq)/10/25.4,list(hourly_sub$Date),sum,na.rm=TRUE)
-hourly_agg_snowacc1dpth <- aggregate(as.numeric(hourly_sub$snowacc1dpth)*25.4,list(hourly_sub$Date),sum,na.rm=TRUE)
-hourly_agg_snowaccmax <- aggregate(as.numeric(hourly_sub$snowacc1dpth)/25.4,list(hourly_sub$Date),max,na.rm=TRUE)
+hourly_agg_temp <- aggregate(as.numeric(hourly_subSub$temp)*1.8+32,list(hourly_subSub$Date),mean,na.rm=TRUE)
+hourly_agg_dewpt <- aggregate(as.numeric(hourly_subSub$dewpt)*1.8+32,list(hourly_subSub$Date),mean,na.rm=TRUE)
+hourly_agg_precip <- aggregate(as.numeric(hourly_subSub$precip1dpth)/25.4,list(hourly_subSub$Date),sum,na.rm=TRUE)
+hourly_agg_precip2 <- aggregate(as.numeric(hourly_subSub$precip2dpth)/25.4,list(hourly_subSub$Date),sum,na.rm=TRUE)
+hourly_agg_precip3 <- aggregate(as.numeric(hourly_subSub$precip3dpth)/25.4,list(hourly_subSub$Date),sum,na.rm=TRUE)
+hourly_agg_precip4 <- aggregate(as.numeric(hourly_subSub$precip4dpth)/25.4,list(hourly_subSub$Date),sum,na.rm=TRUE)
+hourly_agg_snowwteq <- aggregate(as.numeric(hourly_subSub$snowwteq)/25.4,list(hourly_subSub$Date),sum,na.rm=TRUE)
+hourly_agg_snowacc1dpth <- aggregate(as.numeric(hourly_subSub$snowacc1dpth)*25.4,list(hourly_subSub$Date),sum,na.rm=TRUE)
+hourly_agg_snowaccmax <- aggregate(as.numeric(hourly_subSub$snowacc1dpth)/25.4,list(hourly_subSub$Date),max,na.rm=TRUE)
+
+
+colnames(hourly_agg_precip) <- c("Date","sumPrecip")
+colnames(hourly_agg_precip2) <- c("Date","sumPrecip2")
+colnames(hourly_agg_precip3) <- c("Date","sumPrecip3")
+colnames(hourly_agg_precip4) <- c("Date","sumPrecip4")
+precip_checkSub <- merge(hourly_agg_precip,daily_summSub[c("YEARMODA","PRCP")],by.x="Date",by.y="YEARMODA")
+precip_checkSub <- merge(hourly_agg_precip2,precip_checkSub,by.x="Date",by.y="Date")
+precip_checkSub <- merge(hourly_agg_precip3,precip_checkSub,by.x="Date",by.y="Date")
+precip_checkSub <- merge(hourly_agg_precip4,precip_checkSub,by.x="Date",by.y="Date")
