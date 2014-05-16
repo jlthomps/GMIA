@@ -21,6 +21,11 @@ pulling bod, cod, eg, pg from qwdata - storm id is in scmfl field
 daily snow - take snow depth differences from daily summary weather data and merge into hourly
 Cargo and St. Lukes - figure out travel times and then run same regressions for those
 final comparison - amount measured at Outfall and Cargo vs how much makes it to St. Lukes
+Jessica
+
+The management happened over a period of time, beginning probably in 1998 or 1999. They increased it each year and still are working on improvements. I think the best approach might be to loop through different years as the starting point from 1998 through 2006 or so.
+
+Another option might be to just compute the residuals of the regression, graph them as a time series, and run a smoothing curve through it to see if there is a trend. Use the "lowess" function as a start for the smoothing curve and play around with the f value varying it from about 0.1 to about 0.5 to see how it reacts.
 
 
 
