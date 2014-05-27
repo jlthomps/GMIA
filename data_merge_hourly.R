@@ -8,43 +8,45 @@ hydrovol_data <- Hydrovol(dfQ, Q="Q", time="pdate", df.dates, bdate="bpdate",eda
 hydrovol_data$vol.liters <- hydrovol_data$event.vol*28.31685
 hydrovol_data$stormnum <- gmia_storms$Storm.ID
 
-storm_qwdata <- read.delim("C:/Users/jlthomps/Desktop/git/GMIA/outfallQW.txt",header=TRUE,sep="\t",stringsAsFactors=FALSE)
-storm_qwdata <- storm_qwdata[which(nchar(storm_qwdata$SAMPLE_END_DT)>0),]
-storm_qwdata$SAMPLE_START_DT <- as.POSIXct(storm_qwdata$SAMPLE_START_DT,format="%d-%b-%y %H:%M:%S")
-storm_qwdata$SAMPLE_END_DT <- as.POSIXct(storm_qwdata$SAMPLE_END_DT,format="%d-%b-%y %H:%M:%S")
-storm_qwdata$RECORD_NO <- as.numeric(storm_qwdata$RECORD_NO)
+storm_qwdata <- read.delim("C:/Users/jlthomps/Desktop/git/GMIA/outfallresult.txt",header=TRUE,sep="\t",stringsAsFactors=FALSE,comment.char="#",colClasses=rep("character",16))
+storm_qwdata <- storm_qwdata[which(nchar(storm_qwdata$EDATE)>0),]
+storm_qwdata$SAMPLE_START_DT <- as.POSIXct(paste(storm_qwdata$BDATE,storm_qwdata$BTIME,sep=" "),format="%Y%d%m %H%M")
+storm_qwdata$SAMPLE_END_DT <- as.POSIXct(paste(storm_qwdata$EDATE,storm_qwdata$ETIME,sep=" "),format="%Y%d%m %H%M")
+storm_qwdata$RECORD_NO <- as.numeric(storm_qwdata$SAMPL)
+storm_qwdata$StormId <- storm_qwdata$SCMFL
 
 #####################OPTIONAL
-qw_samples <- unique(storm_qwdata[,c("RECORD_NO","SAMPLE_START_DT","SAMPLE_END_DT")])
-gmia_storms$record_no <- gmia_storms$Site
-gmia_storms$record_no1 <- gmia_storms$Site
-gmia_storms$record_no2 <- gmia_storms$Site
-gmia_storms$record_no3 <- gmia_storms$Site
+# qw_samples <- unique(storm_qwdata[,c("RECORD_NO","SAMPLE_START_DT","SAMPLE_END_DT")])
+# gmia_storms$record_no <- gmia_storms$Site
+# gmia_storms$record_no1 <- gmia_storms$Site
+# gmia_storms$record_no2 <- gmia_storms$Site
+# gmia_storms$record_no3 <- gmia_storms$Site
+# 
+# for (i in 1:nrow(gmia_storms)) {
+#   begin.date <- floor_date(gmia_storms$Sample.Start.Date[i],unit="day")
+#   end.date <- floor_date(gmia_storms$Sample.End.Date[i],unit="day")
+#   qwSub <- qw_samples[which(floor_date(qw_samples$SAMPLE_START_DT,unit="day")==begin.date),]
+#   qwSub1 <- qw_samples[which(floor_date(qw_samples$SAMPLE_START_DT,unit="day")==end.date),]
+#   qwSub2 <- qw_samples[which(floor_date(qw_samples$SAMPLE_END_DT,unit="day")==begin.date),]
+#   qwSub3 <- qw_samples[which(floor_date(qw_samples$SAMPLE_END_DT,unit="day")==end.date),]
+#   if (nrow(qwSub)==1) {
+#     gmia_storms$record_no[i] <- qwSub$RECORD_NO
+#   } else {gmia_storms$record_no[i] <- NA}
+#   if (nrow(qwSub1)==1) {
+#     gmia_storms$record_no1[i] <- qwSub1$RECORD_NO
+#   } else {gmia_storms$record_no1[i] <- NA}
+#   if (nrow(qwSub2)==1) {
+#     gmia_storms$record_no2[i] <- qwSub2$RECORD_NO
+#   } else {gmia_storms$record_no2[i] <- NA}
+#   if (nrow(qwSub3)==1) {
+#     gmia_storms$record_no3[i] <- qwSub3$RECORD_NO
+#   } else {gmia_storms$record_no3[i] <- NA}
+# }
+# gmia_storms$record_no <- if (floor_date(storm_qwdata$SAMPLE_START_DT)==floor_date(gmia_storms$Sample.Start.Date)) storm_qwdata$RECORD_NO
+# ###################################
 
-for (i in 1:nrow(gmia_storms)) {
-  begin.date <- floor_date(gmia_storms$Sample.Start.Date[i],unit="day")
-  end.date <- floor_date(gmia_storms$Sample.End.Date[i],unit="day")
-  qwSub <- qw_samples[which(floor_date(qw_samples$SAMPLE_START_DT,unit="day")==begin.date),]
-  qwSub1 <- qw_samples[which(floor_date(qw_samples$SAMPLE_START_DT,unit="day")==end.date),]
-  qwSub2 <- qw_samples[which(floor_date(qw_samples$SAMPLE_END_DT,unit="day")==begin.date),]
-  qwSub3 <- qw_samples[which(floor_date(qw_samples$SAMPLE_END_DT,unit="day")==end.date),]
-  if (nrow(qwSub)==1) {
-    gmia_storms$record_no[i] <- qwSub$RECORD_NO
-  } else {gmia_storms$record_no[i] <- NA}
-  if (nrow(qwSub1)==1) {
-    gmia_storms$record_no1[i] <- qwSub1$RECORD_NO
-  } else {gmia_storms$record_no1[i] <- NA}
-  if (nrow(qwSub2)==1) {
-    gmia_storms$record_no2[i] <- qwSub2$RECORD_NO
-  } else {gmia_storms$record_no2[i] <- NA}
-  if (nrow(qwSub3)==1) {
-    gmia_storms$record_no3[i] <- qwSub3$RECORD_NO
-  } else {gmia_storms$record_no3[i] <- NA}
-}
-gmia_storms$record_no <- if (floor_date(storm_qwdata$SAMPLE_START_DT)==floor_date(gmia_storms$Sample.Start.Date)) storm_qwdata$RECORD_NO
-###################################
-
-storm_qwdata <- merge(storm_qwdata,gmia_storms,by.x=c("RECORD_NO"),by.y="record.no")
+gmia_storms$StormId <- paste(gmia_storms$Site,gmia_storms$Storm.ID,sep="-")
+storm_qwdata <- merge(storm_qwdata,gmia_storms,by="StormId")
 
 data_merge <- merge(hydrovol_data,storm_qwdata[which(storm_qwdata$PARM_CD==310),c("Storm.ID","RESULT_VA")],by.x=c("stormnum"),by.y=c("Storm.ID"),all.x=TRUE)
 colnames(data_merge) <- c("stormnum","bpdate","epdate","event.vol","Qmax","Eduration","vol.liters","BODconc")

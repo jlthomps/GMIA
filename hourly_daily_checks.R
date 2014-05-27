@@ -83,8 +83,8 @@ hourly_sub$prcp15min3mm <- ifelse(hourly_sub$prcp15min3mm==999.9,'',hourly_sub$p
 hourly_sub$prcp15min4mm <- ifelse(hourly_sub$prcp15min4mm==999.9,'',hourly_sub$prcp15min4mm)
 hourly_sub$datetime <- as.POSIXct(paste(hourly_sub$Date,formatC(hourly_sub$Time,width=4,format="d",flag="0"),' '),format="%Y%m%d %H%M")
 
-daily_summSub <- daily_summ[which(daily_summ$date<strptime("1991-01-01","%Y-%m-%d")),]
-hourly_subSub <- hourly_sub[which(floor_date(hourly_sub$datetime,unit="day")<max(floor_date(daily_summSub$date))),]
+# daily_summSub <- daily_summ[which(daily_summ$date<strptime("1991-01-01","%Y-%m-%d")),]
+# hourly_subSub <- hourly_sub[which(floor_date(hourly_sub$datetime,unit="day")<max(floor_date(daily_summSub$date))),]
 
 #daily_summOne <- daily_summ[which(daily_summ$date<strptime("1990-10-02","%Y-%m-%d")),]
 #hourly_test <- hourly_sub[1:24,]
@@ -93,22 +93,22 @@ hourly_subSub <- hourly_sub[which(floor_date(hourly_sub$datetime,unit="day")<max
 #hourly_subOne <- hourly_subOne[,c(1:5,)]
 
 # test hourly_sub daily aggregation vs daily_summ
-hourly_agg_temp <- aggregate(as.numeric(hourly_subSub$temp)*1.8+32,list(hourly_subSub$Date),mean,na.rm=TRUE)
-hourly_agg_dewpt <- aggregate(as.numeric(hourly_subSub$dewpt)*1.8+32,list(hourly_subSub$Date),mean,na.rm=TRUE)
-hourly_agg_precip <- aggregate(as.numeric(hourly_subSub$precip1dpth)/25.4,list(hourly_subSub$Date),sum,na.rm=TRUE)
-hourly_agg_precip2 <- aggregate(as.numeric(hourly_subSub$precip2dpth)/25.4,list(hourly_subSub$Date),sum,na.rm=TRUE)
-hourly_agg_precip3 <- aggregate(as.numeric(hourly_subSub$precip3dpth)/25.4,list(hourly_subSub$Date),sum,na.rm=TRUE)
-hourly_agg_precip4 <- aggregate(as.numeric(hourly_subSub$precip4dpth)/25.4,list(hourly_subSub$Date),sum,na.rm=TRUE)
-hourly_agg_snowwteq <- aggregate(as.numeric(hourly_subSub$snowwteq)/25.4,list(hourly_subSub$Date),sum,na.rm=TRUE)
-hourly_agg_snowacc1dpth <- aggregate(as.numeric(hourly_subSub$snowacc1dpth)*25.4,list(hourly_subSub$Date),sum,na.rm=TRUE)
-hourly_agg_snowaccmax <- aggregate(as.numeric(hourly_subSub$snowacc1dpth)/25.4,list(hourly_subSub$Date),max,na.rm=TRUE)
-
-
-colnames(hourly_agg_precip) <- c("Date","sumPrecip")
-colnames(hourly_agg_precip2) <- c("Date","sumPrecip2")
-colnames(hourly_agg_precip3) <- c("Date","sumPrecip3")
-colnames(hourly_agg_precip4) <- c("Date","sumPrecip4")
-precip_checkSub <- merge(hourly_agg_precip,daily_summSub[c("YEARMODA","PRCP")],by.x="Date",by.y="YEARMODA")
-precip_checkSub <- merge(hourly_agg_precip2,precip_checkSub,by.x="Date",by.y="Date")
-precip_checkSub <- merge(hourly_agg_precip3,precip_checkSub,by.x="Date",by.y="Date")
-precip_checkSub <- merge(hourly_agg_precip4,precip_checkSub,by.x="Date",by.y="Date")
+# hourly_agg_temp <- aggregate(as.numeric(hourly_subSub$temp)*1.8+32,list(hourly_subSub$Date),mean,na.rm=TRUE)
+# hourly_agg_dewpt <- aggregate(as.numeric(hourly_subSub$dewpt)*1.8+32,list(hourly_subSub$Date),mean,na.rm=TRUE)
+# hourly_agg_precip <- aggregate(as.numeric(hourly_subSub$precip1dpth)/25.4,list(hourly_subSub$Date),sum,na.rm=TRUE)
+# hourly_agg_precip2 <- aggregate(as.numeric(hourly_subSub$precip2dpth)/25.4,list(hourly_subSub$Date),sum,na.rm=TRUE)
+# hourly_agg_precip3 <- aggregate(as.numeric(hourly_subSub$precip3dpth)/25.4,list(hourly_subSub$Date),sum,na.rm=TRUE)
+# hourly_agg_precip4 <- aggregate(as.numeric(hourly_subSub$precip4dpth)/25.4,list(hourly_subSub$Date),sum,na.rm=TRUE)
+# hourly_agg_snowwteq <- aggregate(as.numeric(hourly_subSub$snowwteq)/25.4,list(hourly_subSub$Date),sum,na.rm=TRUE)
+# hourly_agg_snowacc1dpth <- aggregate(as.numeric(hourly_subSub$snowacc1dpth)*25.4,list(hourly_subSub$Date),sum,na.rm=TRUE)
+# hourly_agg_snowaccmax <- aggregate(as.numeric(hourly_subSub$snowacc1dpth)/25.4,list(hourly_subSub$Date),max,na.rm=TRUE)
+# 
+# 
+# colnames(hourly_agg_precip) <- c("Date","sumPrecip")
+# colnames(hourly_agg_precip2) <- c("Date","sumPrecip2")
+# colnames(hourly_agg_precip3) <- c("Date","sumPrecip3")
+# colnames(hourly_agg_precip4) <- c("Date","sumPrecip4")
+# precip_checkSub <- merge(hourly_agg_precip,daily_summSub[c("YEARMODA","PRCP")],by.x="Date",by.y="YEARMODA")
+# precip_checkSub <- merge(hourly_agg_precip2,precip_checkSub,by.x="Date",by.y="Date")
+# precip_checkSub <- merge(hourly_agg_precip3,precip_checkSub,by.x="Date",by.y="Date")
+# precip_checkSub <- merge(hourly_agg_precip4,precip_checkSub,by.x="Date",by.y="Date")
