@@ -1,8 +1,8 @@
 library(dataRetrieval)
 library(USGSwsBase)
 
-daily_summ <- read.csv("C:/Users/jlthomps/Desktop/git/GMIA/global_daily_summary_CDO2400066445620.txt",header=TRUE,stringsAsFactors=FALSE,strip.white=TRUE)
-#daily_summ <- read.csv("/Users/jlthomps/GMIA/global_daily_summary_CDO2400066445620.txt",header=TRUE,stringsAsFactors=FALSE,strip.white=TRUE)
+#daily_summ <- read.csv("C:/Users/jlthomps/Desktop/git/GMIA/global_daily_summary_CDO2400066445620.txt",header=TRUE,stringsAsFactors=FALSE,strip.white=TRUE)
+daily_summ <- read.csv("/Users/jlthomps/GMIA/global_daily_summary_CDO2400066445620.txt",header=TRUE,stringsAsFactors=FALSE,strip.white=TRUE)
 daily_summ$FRSHTT <- sprintf("%06d",daily_summ$FRSHTT)
 daily_summ$date <- strptime(daily_summ$YEARMODA,format="%Y%m%d")
 daily_summ$max_flg <- ifelse(substr(daily_summ$MAX,nchar(daily_summ$MAX),nchar(daily_summ$MAX)+1)=='*','*','')
@@ -30,8 +30,8 @@ daily_summ$hail <- substr(daily_summ$FRSHTT,4,4)
 daily_summ$thunder <- substr(daily_summ$FRSHTT,5,5)
 daily_summ$tornado <- substr(daily_summ$FRSHTT,6,6)
 
-hourly_data <- read.delim("C:/Users/jlthomps/Desktop/git/GMIA/hourly_global.txt",header=FALSE,stringsAsFactors=FALSE,skip=2,strip.white=TRUE,comment.char="",sep=",")
-#hourly_data <- read.delim("/Users/jlthomps/GMIA/hourly_global.txt",header=FALSE,stringsAsFactors=FALSE,skip=2,strip.white=TRUE,comment.char="",sep=",")
+#hourly_data <- read.delim("C:/Users/jlthomps/Desktop/git/GMIA/hourly_global.txt",header=FALSE,stringsAsFactors=FALSE,skip=2,strip.white=TRUE,comment.char="",sep=",")
+hourly_data <- read.delim("/Users/jlthomps/GMIA/hourly_global.txt",header=FALSE,stringsAsFactors=FALSE,skip=2,strip.white=TRUE,comment.char="",sep=",")
 
 hourly_sub <- hourly_data[,c(1:8,22:23,24:25,26:27,28:49,130:135,136:151,162:189)]
 colnames(hourly_sub) <- c("site_name","USAF","NCDC","Date","Time","I","Type","QCP","temp","tempQ","dewpt","dewptq","atmpr","atmprq",
