@@ -1,14 +1,27 @@
 
-gmia_application <- read.csv("C:/Users/jlthomps/Desktop/git/GMIA/report.event.table.csv",header=TRUE,stringsAsFactors=FALSE)
-gmia_application$Event.Start.Date <- as.POSIXct(gmia_application$Event.Start.Date,format="%m/%d/%Y")
-gmia_application$Event.End.Date <- as.POSIXct(gmia_application$Event.End.Date,format="%m/%d/%Y")
+#gmia_application <- read.csv("C:/Users/jlthomps/Desktop/git/GMIA/report.event.table.csv",header=TRUE,stringsAsFactors=FALSE)
+gmia_application <- read.csv("/Users/jlthomps/GMIA/glycol_applications_and_storm_loads.csv",header=TRUE,stringsAsFactors=FALSE)
+
+gmia_application$Event.Start.Date <- as.POSIXct(gmia_application$Start.Date,format="%m/%d/%Y")
+gmia_application$Event.End.Date <- as.POSIXct(gmia_application$End.Date,format="%m/%d/%Y")
+gmia_application <- gmia_application[,c(1,4:7,14:15,35:36)]
+for (i in 1:nrow(gmia_application)) {
+  if (length(unlist(strsplit(gmia_application$Duration..hours.[i],":")))==3) {
+    gmia_application$duration[i] <- as.numeric(unlist(strsplit(gmia_application$Duration..hours.[i],":"))[1])+(as.numeric(unlist(strsplit(gmia_application$Duration..hours.[i],":"))[2])/60)+(as.numeric(unlist(strsplit(gmia_application$Duration..hours.[i],":"))[3])/3600)
+  } else if (length(unlist(strsplit(gmia_application$Duration..hours.[i],":")))==2) {
+    gmia_application$duration[i] <- as.numeric(unlist(strsplit(gmia_application$Duration..hours.[i],":"))[1])+(as.numeric(unlist(strsplit(gmia_application$Duration..hours.[i],":"))[2])/60)
+  } else { gmia_application$duration[i] <- as.numeric(gmia_application$Duration..hours.[i])}
+}
+colnames(gmia_application) <- c("StormId","durationHours","precipDesc","OUTglycolGal","OUTglycolKg","CGglycolGal","CGglycolKg","Event.Start.Date","Event.End.Date","duration")
 
 library(GSHydroTools)
 hydrovol_data <- Hydrovol(dfQ, Q="Q", time="pdate", df.dates, bdate="bpdate",edate="epdate",volume="event.vol",Qmax="Qmax",duration="Eduration")
 hydrovol_data$vol.liters <- hydrovol_data$event.vol*28.31685
 hydrovol_data$stormnum <- gmia_storms$Storm.ID
 
-storm_qwdata <- read.delim("C:/Users/jlthomps/Desktop/git/GMIA/outfallresult.txt",header=TRUE,sep="\t",stringsAsFactors=FALSE,comment.char="#",colClasses=rep("character",16))
+#storm_qwdata <- read.delim("C:/Users/jlthomps/Desktop/git/GMIA/outfallresult.txt",header=TRUE,sep="\t",stringsAsFactors=FALSE,comment.char="#",colClasses=rep("character",16))
+storm_qwdata <- read.delim("/Users/jlthomps/GMIA/outfallresult.txt",header=TRUE,sep="\t",stringsAsFactors=FALSE,comment.char="#",colClasses=rep("character",16))
+
 storm_qwdata <- storm_qwdata[which(nchar(storm_qwdata$EDATE)>0),]
 storm_qwdata$SAMPLE_START_DT <- as.POSIXct(paste(storm_qwdata$BDATE,storm_qwdata$BTIME,sep=" "),format="%Y%d%m %H%M")
 storm_qwdata$SAMPLE_END_DT <- as.POSIXct(paste(storm_qwdata$EDATE,storm_qwdata$ETIME,sep=" "),format="%Y%d%m %H%M")
@@ -48,19 +61,22 @@ storm_qwdata$StormId <- storm_qwdata$SCMFL
 gmia_storms$StormId <- paste(gmia_storms$Site,gmia_storms$Storm.ID,sep="-")
 storm_qwdata <- merge(storm_qwdata,gmia_storms,by="StormId")
 
-data_merge <- merge(hydrovol_data,storm_qwdata[which(storm_qwdata$PARM_CD==310),c("Storm.ID","RESULT_VA")],by.x=c("stormnum"),by.y=c("Storm.ID"),all.x=TRUE)
-colnames(data_merge) <- c("stormnum","bpdate","epdate","event.vol","Qmax","Eduration","vol.liters","BODconc")
-data_merge <- merge(data_merge,storm_qwdata[which(storm_qwdata$PARM_CD==335),c("Storm.ID","RESULT_VA")],by.x=c("stormnum"),by.y=c("Storm.ID"),all.x=TRUE)
-colnames(data_merge) <- c("stormnum","bpdate","epdate","event.vol","Qmax","Eduration","vol.liters","BODconc","CODconc")
-data_merge <- merge(data_merge,storm_qwdata[which(storm_qwdata$PARM_CD==91080),c("Storm.ID","RESULT_VA")],by.x=c("stormnum"),by.y=c("Storm.ID"),all.x=TRUE)
-colnames(data_merge) <- c("stormnum","bpdate","epdate","event.vol","Qmax","Eduration","vol.liters","BODconc","CODconc","PGconc")
-data_merge <- merge(data_merge,storm_qwdata[which(storm_qwdata$PARM_CD==91075),c("Storm.ID","RESULT_VA")],by.x=c("stormnum"),by.y=c("Storm.ID"),all.x=TRUE)
-colnames(data_merge) <- c("stormnum","bpdate","epdate","event.vol","Qmax","Eduration","vol.liters","BODconc","CODconc","PGconc","EGconc")
-data_merge$BODload <- data_merge$vol.liters*data_merge$BODconc/1000000
-data_merge$CODload <- data_merge$vol.liters*data_merge$CODconc/1000000
-data_merge$PGload <- data_merge$vol.liters*data_merge$PGconc/1000000
-data_merge$EGload <- data_merge$vol.liters*data_merge$EGconc/1000000
-data_merge$EGPGload <- data_merge$EGload+data_merge$PGload
+data_merge <- merge(hydrovol_data,storm_qwdata[which(storm_qwdata$PCODE=='00310'),c("StormId","VALUE","REMRK","Storm.ID")],by.x=c("stormnum"),by.y=c("Storm.ID"),all.x=TRUE)
+colnames(data_merge) <- c("stormnum","bpdate","epdate","event.vol","Qmax","Eduration","vol.liters","StormId","BODconc","BODrmk")
+data_merge <- merge(data_merge,storm_qwdata[which(storm_qwdata$PCODE=='00335'),c("Storm.ID","VALUE","REMRK")],by.x=c("stormnum"),by.y=c("Storm.ID"),all.x=TRUE)
+colnames(data_merge) <- c("stormnum","bpdate","epdate","event.vol","Qmax","Eduration","vol.liters","StormId","BODconc","BODrmk","CODconc","CODrmk")
+data_merge <- merge(data_merge,storm_qwdata[which(storm_qwdata$PCODE=='91080'),c("Storm.ID","VALUE","REMRK")],by.x=c("stormnum"),by.y=c("Storm.ID"),all.x=TRUE)
+colnames(data_merge) <- c("stormnum","bpdate","epdate","event.vol","Qmax","Eduration","vol.liters","StormId","BODconc","BODrmk","CODconc","CODrmk","PGconc","PGrmk")
+data_merge <- merge(data_merge,storm_qwdata[which(storm_qwdata$PCODE=='91075'),c("Storm.ID","VALUE","REMRK")],by.x=c("stormnum"),by.y=c("Storm.ID"),all.x=TRUE)
+colnames(data_merge) <- c("stormnum","bpdate","epdate","event.vol","Qmax","Eduration","vol.liters","StormId","BODconc","BODrmk","CODconc","CODrmk","PGconc","PGrmk","EGconc","EGrmk")
+data_merge$BODload <- data_merge$vol.liters*as.numeric(data_merge$BODconc)/1000000
+data_merge$CODload <- data_merge$vol.liters*as.numeric(data_merge$CODconc)/1000000
+data_merge$PGload <- data_merge$vol.liters*as.numeric(data_merge$PGconc)/1000000
+data_merge$EGload <- data_merge$vol.liters*as.numeric(data_merge$EGconc)/1000000
+#data_merge$EGPGload <- data_merge$EGload+data_merge$PGload
+for (i in 1:nrow(data_merge)) {
+  data_merge$snow[i] <- as.numeric(daily_summ$SNDP[which(daily_summ$YEARMODA==as.numeric(strftime(round(data_merge$epdate[i],units="days"),format="%Y%m%d")))])-as.numeric(daily_summ$SNDP[which(daily_summ$YEARMODA==as.numeric(strftime(round(data_merge$bpdate[i],units="days"),format="%Y%m%d")))]) 
+}
 
 hourly_match <- mergeNearest(data_merge,dates.left="bpdate",right=hourly_sub,dates.right="datetime",max.diff="2 hours")
 hourly_match <- hourly_match[,c("stormnum","bpdate","Date","Time")]
@@ -90,17 +106,13 @@ for (i in 1:noreps) {
   storm_merge$snowacc_max[i] <- max(as.numeric(hourly_subT$snowacc1dpth))
 }
 
-data_merge <- merge(storm_merge,gmia_application[,c(1,4:7)],by.x=c("stormnum"),by.y=c("Storm.ID"),all.x=TRUE)
-data_merge <- data_merge[,c(1:3,5:7,12:16,19:28)]
-colnames(data_merge) <- c("stormnum","bpdate","epdate","Qmax","Eduration","vol.liters","BODload","CODload","PGload","EGload","EGPGload","mean_temp","max_temp","min_temp","prcp_sum","snowwteq_sum","snowacc_max","deice_Eduration","prcp_desc","galGlycol","kgGlycol")
-data_merge$deice_Eduration <- as.numeric(data_merge$deice_Eduration)
-data_merge$kgGlycol <- as.numeric(gsub(",","",data_merge$kgGlycol))
-data_merge$galGlycol<- as.numeric(gsub(",","",data_merge$galGlycol))
-data_merge$decYear <- paste(strftime(data_merge$bpdate,"%Y"),".",as.POSIXlt(data_merge$bpdate)$yday+1,sep="")
-data_merge$sinDY <- sin(as.numeric(data_merge$decYear)*2*pi)
-data_merge$cosDY <- cos(as.numeric(data_merge$decYear)*2*pi)
+data_merge <- merge(storm_merge,gmia_application[,c(1,3:7,10)],by.x=c("stormnum"),by.y=c("StormId"),all.x=TRUE)
+data_merge <- data_merge[,c(1:3,5:7,10,12,14,16:21,24:35)]
+colnames(data_merge) <- c("stormnum","bpdate","epdate","Qmax","Eduration","vol.liters","BODrmk","CODrmk","PGrmk","EGrmk","BODload","CODload","PGload","EGload","snow_depth","mean_temp","max_temp","min_temp","prcp_sum","snowwteq_sum","snowacc_max","prcp_desc","OUTgalGlycol","OUTkgGlycol","CGgalGlycol","CGkgGlycol","deice_Eduration")
 data_sub <- data_merge
 #data_sub <- data_sub[grep("melt",data_sub$prcp_desc,fixed=TRUE,invert=TRUE),]
 #data_sub <- data_sub[grep("melt",data_sub$prcp_desc,fixed=TRUE),]
-data_sub$remark <- ""
-data_sub$decYear <- as.numeric(data_sub$decYear)
+data_sub$OUTgalGlycol <- as.numeric(data_sub$OUTgalGlycol)
+data_sub$OUTkgGlycol <- as.numeric(data_sub$OUTkgGlycol)
+data_sub$CGgalGlycol <- as.numeric(data_sub$CGgalGlycol)
+data_sub$CGkgGlycol <- as.numeric(data_sub$CGkgGlycol)

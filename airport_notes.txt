@@ -76,6 +76,13 @@ Data:
 //projects/nonpoint/gmia/WQ2013/ for data pulled from NWIS QWData and calculated loads
 http://w1.weather.gov/data/obhistory/KMKE.html
 http://www.crh.noaa.gov/data/obhistory/KMKE.html
+http://www.ncdc.noaa.gov/cdo-web/datasets
+* GHCN-daily csv 343030.csv (doc GHCN_documentation)
+* quality controlled local climatological data - only available back to 2005
+* GSOD - global summary of day global_daily_summary_CDO2400066445620.txt (doc GSOD_DESC)
+* Global Hourly - hourly_global (doc ish-format-document.pdf)
+* normals - nor useful
+* hourly precip - hourly_precip_170692.csv (doc PRECIP_HLY_documentation.doc)
 
 COD pcode 00335
 BOD pcode 00310
