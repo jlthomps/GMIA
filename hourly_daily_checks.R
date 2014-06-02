@@ -83,6 +83,10 @@ hourly_sub$prcp15min3mm <- ifelse(hourly_sub$prcp15min3mm==999.9,'',hourly_sub$p
 hourly_sub$prcp15min4mm <- ifelse(hourly_sub$prcp15min4mm==999.9,'',hourly_sub$prcp15min4mm)
 hourly_sub$datetime <- as.POSIXct(paste(hourly_sub$Date,formatC(hourly_sub$Time,width=4,format="d",flag="0"),' '),format="%Y%m%d %H%M")
 
+hourly_precip <- read.csv("/Users/jlthomps/GMIA/hourly_precip_170692.csv",stringsAsFactors=FALSE)
+
+daily_data <- read.csv("/Users/jlthomps/GMIA/343030.csv",stringsAsFactors=FALSE)
+
 # daily_summSub <- daily_summ[which(daily_summ$date<strptime("1991-01-01","%Y-%m-%d")),]
 # hourly_subSub <- hourly_sub[which(floor_date(hourly_sub$datetime,unit="day")<max(floor_date(daily_summSub$date))),]
 

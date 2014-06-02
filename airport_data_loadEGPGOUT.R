@@ -36,16 +36,16 @@ load("~/GMIA/GMIAData.RData")
 # set necessary site information and inputs to step-wise regression
 library(GSqwsr)
 #EGPGload
-data_sub <- data_sub[which(!is.na(data_sub$EGload)|!is.na(data_sub$PGload)),]
-data_sub <- data_sub[which(!is.na(data_sub$OUTkgGlycol)),]
-data_sub <- data_sub[which(data_sub$EGrmk!=">" | data_sub$PGrmk!=">"),]
 data_sub$EGPGload <- data_sub$EGload+data_sub$PGload
 data_sub$EGPGrmk <- pmax(data_sub$EGrmk,data_sub$PGrmk,na.rm=TRUE)
+data_sub <- data_sub[which(!is.na(data_sub$EGPGload)),]
+data_sub <- data_sub[which(!is.na(data_sub$OUTkgGlycol)),]
+data_sub <- data_sub[which(data_sub$EGPGrmk!=">"),]
 data_sub$decYear <- getDecYear(data_sub$bpdate)
 data_sub$sinDY <- sin(data_sub$decYear*2*pi)
 data_sub$cosDY <- cos(data_sub$decYear*2*pi)
-data_subPre <- data_sub[which(data_sub$bpdate<strftime("2000-10-01","%Y-%m-%d")),]
-data_subPost <- data_sub[which(data_sub$bpdate>=strftime("2000-10-01","%Y-%m-%d")),]
+data_subPre <- data_sub[which(data_sub$bpdate<strftime("2005-10-01","%Y-%m-%d")),]
+data_subPost <- data_sub[which(data_sub$bpdate>=strftime("2005-10-01","%Y-%m-%d")),]
 
 
 ####Pre
@@ -205,3 +205,15 @@ sink()
 
 #####################################################
 
+resids_56 <- data.frame(data_sub$bpdate,modelReturn$RESID)
+pdf(fileName <- paste(pathToSave,"/",investigateResponse,"allResiduals.pdf",sep=""))
+par(mfrow=c(2,2))
+plot(resids_56$data_sub.bpdate,resids_56$modelReturn.RESID,xlab="Datetime",ylab="EGPG Model Residuals",col="red",type="p",main=paste(siteName,"residuals .1",sep=" "))
+lines(lowess(resids_56$data_sub.bpdate,resids_56$modelReturn.RESID,f=0.1),col="blue")
+plot(resids_56$data_sub.bpdate,resids_56$modelReturn.RESID,xlab="Datetime",ylab="EGPG Model Residuals",col="red",type="p",main=paste(siteName,"residuals .2",sep=" "))
+lines(lowess(resids_56$data_sub.bpdate,resids_56$modelReturn.RESID,f=0.2),col="blue")
+plot(resids_56$data_sub.bpdate,resids_56$modelReturn.RESID,xlab="Datetime",ylab="EGPG Model Residuals",col="red",type="p",main=paste(siteName,"residuals .3",sep=" "))
+lines(lowess(resids_56$data_sub.bpdate,resids_56$modelReturn.RESID,f=0.3),col="blue")
+plot(resids_56$data_sub.bpdate,resids_56$modelReturn.RESID,xlab="Datetime",ylab="EGPG Model Residuals",col="red",type="p",main=paste(siteName,"residuals .4",sep=" "))
+lines(lowess(resids_56$data_sub.bpdate,resids_56$modelReturn.RESID,f=0.4),col="blue")
+dev.off()
