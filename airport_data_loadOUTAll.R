@@ -1,4 +1,3 @@
-library(dataRetrieval)
 library(USGSwsBase)
 siteNumber <- '040871475'
 ParameterCd <- '00060'
@@ -6,17 +5,17 @@ StartDate <- '1997-10-01'
 EndDate <- '2012-10-01'
 
 # Run hourly_daily_checks.R
-source('C:/Users/jlthomps/Desktop/git/GMIA/hourly_daily_checks.R')
+#source('C:/Users/jlthomps/Desktop/git/GMIA/hourly_daily_checks.R')
 # Run disch_iceaffect_omit.R or disch_iceaffect_corr.R
-source('C:/Users/jlthomps/Desktop/git/GMIA/disch_iceaffect_corr.R')
+#source('C:/Users/jlthomps/Desktop/git/GMIA/disch_iceaffect_corr.R')
 # Run data_merge_hourly.R
-source('C:/Users/jlthomps/Desktop/git/GMIA/data_merge_hourly.R')
+#source('C:/Users/jlthomps/Desktop/git/GMIA/data_merge_hourly.R')
 
 # Or load previously saved data
 #load("~/GMIA/GMIAData.RData")
 
 ####BOD
-data_sub <- data_merge
+data_sub <- data_merge[which(substr(data_merge$StormId,1,3)=="OUT"),]
 #data_sub <- data_sub[grep("melt",data_sub$prcp_desc,fixed=TRUE,invert=TRUE),]
 #data_sub <- data_sub[grep("melt",data_sub$prcp_desc,fixed=TRUE),]
 data_sub$OUTgalGlycol <- as.numeric(data_sub$OUTgalGlycol)
@@ -45,6 +44,7 @@ investigateResponse <- "BODLoading"
 transformResponse <- "lognormal"
 
 pathToSave <- paste("C:/Users/jlthomps/Documents/R/GMIA_hourly/",siteName,sep="")
+pathToSave <- paste("/Users/jlthomps/Documents/R/GMIA_hourly/",siteName,sep="")
 
 ##########################################################
 # Preliminary Assessment Plots:
@@ -118,7 +118,7 @@ resids_BOD <- data.frame(data_sub$bpdate,modelReturn$RESID)
 
 
 ####COD
-data_sub <- data_merge
+data_sub <- data_merge[which(substr(data_merge$StormId,1,3)=="OUT"),]
 #data_sub <- data_sub[grep("melt",data_sub$prcp_desc,fixed=TRUE,invert=TRUE),]
 #data_sub <- data_sub[grep("melt",data_sub$prcp_desc,fixed=TRUE),]
 data_sub$OUTgalGlycol <- as.numeric(data_sub$OUTgalGlycol)
@@ -214,7 +214,7 @@ sink()
 resids_COD <- data.frame(data_sub$bpdate,modelReturn$RESID)
 
 ####PG
-data_sub <- data_merge
+data_sub <- data_merge[which(substr(data_merge$StormId,1,3)=="OUT"),]
 #data_sub <- data_sub[grep("melt",data_sub$prcp_desc,fixed=TRUE,invert=TRUE),]
 #data_sub <- data_sub[grep("melt",data_sub$prcp_desc,fixed=TRUE),]
 data_sub$OUTgalGlycol <- as.numeric(data_sub$OUTgalGlycol)
@@ -310,7 +310,7 @@ sink()
 resids_PG <- data.frame(data_sub$bpdate,modelReturn$RESID)
 
 ####PG
-data_sub <- data_merge
+data_sub <- data_merge[which(substr(data_merge$StormId,1,3)=="OUT"),]
 #data_sub <- data_sub[grep("melt",data_sub$prcp_desc,fixed=TRUE,invert=TRUE),]
 #data_sub <- data_sub[grep("melt",data_sub$prcp_desc,fixed=TRUE),]
 data_sub$OUTgalGlycol <- as.numeric(data_sub$OUTgalGlycol)
