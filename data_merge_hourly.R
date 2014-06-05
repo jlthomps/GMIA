@@ -96,13 +96,23 @@ data_merge <- merge(data_merge,storm_qwdata[which(storm_qwdata$PCODE=='91080'),c
 colnames(data_merge) <- c("StormId","bpdate","epdate","event.vol","Qmax","Eduration","vol.liters","Storm.ID","BODconc","BODrmk","CODconc","CODrmk","PGconc","PGrmk")
 data_merge <- merge(data_merge,storm_qwdata[which(storm_qwdata$PCODE=='91075'),c("StormId","VALUE","REMRK")],by.x=c("StormId"),by.y=c("StormId"),all.x=TRUE)
 colnames(data_merge) <- c("StormId","bpdate","epdate","event.vol","Qmax","Eduration","vol.liters","Storm.ID","BODconc","BODrmk","CODconc","CODrmk","PGconc","PGrmk","EGconc","EGrmk")
+data_merge <- merge(data_merge,storm_qwdata[which(storm_qwdata$PCODE=='65240'),c("StormId","VALUE","REMRK")],by.x=c("StormId"),by.y=c("StormId"),all.x=TRUE)
+data_merge <- merge(data_merge,storm_qwdata[which(storm_qwdata$PCODE=='65239'),c("StormId","VALUE","REMRK")],by.x=c("StormId"),by.y=c("StormId"),all.x=TRUE)
+colnames(data_merge) <- c("StormId","bpdate","epdate","event.vol","Qmax","Eduration","vol.liters","Storm.ID","BODconc","BODrmk","CODconc","CODrmk","PGconc","PGrmk","EGconc","EGrmk","ACconc","ACrmk","FMconc","FMrmk")
 data_merge$BODload <- data_merge$vol.liters*as.numeric(data_merge$BODconc)/1000000
 data_merge$CODload <- data_merge$vol.liters*as.numeric(data_merge$CODconc)/1000000
 data_merge$PGload <- data_merge$vol.liters*as.numeric(data_merge$PGconc)/1000000
 data_merge$EGload <- data_merge$vol.liters*as.numeric(data_merge$EGconc)/1000000
+data_merge$ACload <- data_merge$vol.liters*as.numeric(data_merge$ACconc)/1000000
+data_merge$FMload <- data_merge$vol.liters*as.numeric(data_merge$FMconc)/1000000
 #data_merge$EGPGload <- data_merge$EGload+data_merge$PGload
+
+daily_summ$SNDP <- ifelse(nchar(daily_summ$SNDP)==0,0,daily_summ$SNDP)
 for (i in 1:nrow(data_merge)) {
-  data_merge$snow[i] <- as.numeric(daily_summ$SNDP[which(daily_summ$YEARMODA==as.numeric(strftime(round(data_merge$epdate[i],units="days"),format="%Y%m%d")))])-as.numeric(daily_summ$SNDP[which(daily_summ$YEARMODA==as.numeric(strftime(round(data_merge$bpdate[i],units="days"),format="%Y%m%d")))]) 
+  data_merge$snow[i] <- as.numeric(daily_summ$SNDP[which(daily_summ$YEARMODA==as.numeric(strftime(round(data_merge$epdate[i]+86400,units="days"),format="%Y%m%d")))])-as.numeric(daily_summ$SNDP[which(daily_summ$YEARMODA==as.numeric(strftime(round(data_merge$bpdate[i]-86400,units="days"),format="%Y%m%d")))]) 
+  data_merge$GHCNDsnow[i] <- dailyGHCND$SnowDepth[which(dailyGHCND$Date==as.numeric(strftime(round(data_merge$epdate[i]+86400,units="days"),format="%Y%m%d")))]-dailyGHCND$SnowDepth[which(dailyGHCND$Date==as.numeric(strftime(round(data_merge$bpdate[i]-86400,units="days"),format="%Y%m%d")))]
+  data_merge$dailyPrecip[i] <- dailyGHCND$Precip[which(dailyGHCND$Date==as.numeric(strftime(round(data_merge$epdate[i],units="days"),format="%Y%m%d")))]
+  data_merge$dailyWeather[i] <- max(dailyGHCND[which(dailyGHCND$Date==as.numeric(strftime(round(data_merge$epdate[i],units="days"),format="%Y%m%d"))),c(7,11,12,13,15,18,19,23)])
 }
 
 hourly_match <- mergeNearest(data_merge,dates.left="bpdate",right=hourly_sub,dates.right="datetime",max.diff="2 hours")
@@ -134,5 +144,5 @@ for (i in 1:noreps) {
 }
 
 data_merge <- merge(storm_merge,gmia_application[,c(1,3:7,10)],by.x=c("Storm.ID"),by.y=c("StormId"),all.x=TRUE)
-data_merge <- data_merge[,c(1:4,6:8,10,12,14,16:21,24:35)]
-colnames(data_merge) <- c("stormnum","StormId","bpdate","epdate","Qmax","Eduration","vol.liters","BODrmk","CODrmk","PGrmk","EGrmk","BODload","CODload","PGload","EGload","snow_depth","mean_temp","max_temp","min_temp","prcp_sum","snowwteq_sum","snowacc_max","prcp_desc","OUTgalGlycol","OUTkgGlycol","CGgalGlycol","CGkgGlycol","deice_Eduration")
+data_merge <- data_merge[,c(1:4,6:8,10,12,14,16:24,27:38)]
+colnames(data_merge) <- c("stormnum","StormId","bpdate","epdate","Qmax","Eduration","vol.liters","BODrmk","CODrmk","PGrmk","EGrmk","BODload","CODload","PGload","EGload","snow_depth","GHCNDsnowDepth","dailyPrecip","dailyWeather","mean_temp","max_temp","min_temp","prcp_sum","snowwteq_sum","snowacc_max","prcp_desc","OUTgalGlycol","OUTkgGlycol","CGgalGlycol","CGkgGlycol","deice_Eduration")

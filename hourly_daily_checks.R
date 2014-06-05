@@ -1,6 +1,10 @@
 library(dataRetrieval)
 library(USGSwsBase)
 
+dailyGHCND <- read.csv("/Users/jlthomps/GMIA/343030.csv",header=TRUE,stringsAsFactors=FALSE,strip.white=TRUE)
+dailyGHCND <- dailyGHCND[,c(1:4,9,14,74,79,84,89,94,99,104,109,114,119,124,129,134,139,144,149,154,159,164,169)]
+colnames(dailyGHCND) <- c("Station","StationName","Date","Precip","SnowDepth","SnowFall","BlowingSnow","Drizzle","DustOrSand","Fog","FrzDrzl","FrzRain","Glaze","GrndFog","Hail","HeavyFog","HighWinds","IceFog","Sleet","Mist","Rain","Smoke","Snow","Thunder","Tornado","UnkPrecip")
+
 #daily_summ <- read.csv("C:/Users/jlthomps/Desktop/git/GMIA/global_daily_summary_CDO2400066445620.txt",header=TRUE,stringsAsFactors=FALSE,strip.white=TRUE)
 daily_summ <- read.csv("/Users/jlthomps/GMIA/global_daily_summary_CDO2400066445620.txt",header=TRUE,stringsAsFactors=FALSE,strip.white=TRUE)
 daily_summ$FRSHTT <- sprintf("%06d",daily_summ$FRSHTT)
