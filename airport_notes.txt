@@ -1,5 +1,11 @@
 Airport 
 
+6/9/14
+made a few changes to data merging
+figured out correct way to use censored data and reporting limits with censReg
+looking at residuals, breakpoints are not obvious. this is the next step
+
+
 5/15/14
 Now have hourly data merged with storm events. ice affected corrected. all data saved as workspace gmia_merged_data_hourly.RData.
 
