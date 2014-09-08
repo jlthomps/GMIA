@@ -87,7 +87,7 @@ http://www.ncdc.noaa.gov/cdo-web/datasets
 * quality controlled local climatological data - only available back to 2005
 * GSOD - global summary of day global_daily_summary_CDO2400066445620.txt (doc GSOD_DESC)
 * Global Hourly - hourly_global (doc ish-format-document.pdf)
-* normals - nor useful
+* normals - not useful
 * hourly precip - hourly_precip_170692.csv (doc PRECIP_HLY_documentation.doc)
 
 COD pcode 00335
