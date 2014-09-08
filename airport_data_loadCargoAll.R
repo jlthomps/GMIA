@@ -6,6 +6,7 @@
 #source('C:/Users/jlthomps/Desktop/git/GMIA/data_merge_hourly.R')
 
 # Or load previously saved data
+#load("~/GMIA/GMIAData.RData")
 #load("C:/Users/jlthomps/Desktop/git/GMIA/dataMerge.RData")
 
 ####BOD
@@ -145,6 +146,7 @@ investigateResponse <- "CODLoading"
 transformResponse <- "lognormal"
 
 pathToSave <- paste("/Users/jlthomps/Documents/R/GMIA_hourly/",siteName,sep="")
+write.table(data_sub,file=paste(pathToSave,"/",siteName,investigateResponse,"Data.txt",sep=""))
 write.table(data_sub,file=paste(pathToSave,"/",siteName,investigateResponse,"Data.txt",sep=""))
 
 ##########################################################

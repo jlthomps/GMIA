@@ -1,4 +1,5 @@
 
+
 # Run hourly_daily_checks.R
 #source('C:/Users/jlthomps/Desktop/git/GMIA/hourly_daily_checks.R')
 # Run disch_iceaffect_omit.R or disch_iceaffect_corr.R
@@ -32,6 +33,7 @@ data_sub$RpLev <- ifelse(data_sub$BODrmk=="<",data_sub$BODload,0.05)
 #data_subPre <- data_sub[which(data_sub$bpdate<strftime("2000-10-01","%Y-%m-%d")),]
 #data_subPost <- data_sub[which(data_sub$bpdate>=strftime("2000-10-01","%Y-%m-%d")),]
 
+data_sub_cens <- importQW(data_sub,c("Qmax","Eduration","mean_temp","max_temp","min_temp","prcp_sum","OUTkgGlycol","decYear","sinDY","cosDY"),"BODload","BODrmk","",0.005,"User","tons","Unk","","00310","BODLoading")
 data_sub_cens <- importQW(data_sub,c("Qmax","Eduration","snow_depth","GHCNDsnowDepth","mean_temp","max_temp","min_temp","prcp_sum","OUTkgGlycol","decYear","sinDY","cosDY"),"BODload","BODrmk","","RpLev","User","tons","Unk","","00310","BODLoading")
 siteName <- "OutfallAll"
 siteNo <- '040871475'
@@ -41,6 +43,8 @@ investigateResponse <- "BODLoading"
 transformResponse <- "lognormal"
 
 pathToSave <- paste("C:/Users/jlthomps/Documents/R/GMIA_hourly/",siteName,sep="")
+pathToSave <- paste("/Users/jlthomps/Documents/R/GMIA_hourly/",siteName,sep="")
+
 #pathToSave <- paste("/Users/jlthomps/Documents/R/GMIA_hourly/",siteName,sep="")
 write.table(data_sub,file=paste(pathToSave,"/",siteName,investigateResponse,"Data.txt",sep=""))
 ##########################################################
@@ -84,6 +88,7 @@ dev.off()
 
 ##########################################################
 #Save steps to file:
+fileToSave <- paste(pathToSave,"/",investigateResponse,"_steps.csv",sep="")
 fileToSave <- paste(pathToSave,"/",siteName,investigateResponse,"_steps.csv",sep="")
 write.table(steps, fileToSave, row.names=FALSE, sep=",") 
 ##########################################################
@@ -106,6 +111,7 @@ dev.off()
 
 #####################################################
 # Print summary in console:
+fileName <- paste(pathToSave,"/",investigateResponse,"Summary_2.txt", sep="")
 fileName <- paste(pathToSave,"/",siteName,investigateResponse,"Summary_2.txt", sep="")
 
 sink(fileName)
@@ -137,6 +143,7 @@ data_sub <- data_sub[which(data_sub$CODrmk!=">"),]
 data_sub$decYear <- getDecYear(data_sub$bpdate)
 data_sub$sinDY <- sin(data_sub$decYear*2*pi)
 data_sub$cosDY <- cos(data_sub$decYear*2*pi)
+data_sub_cens <- importQW(data_sub,c("Qmax","Eduration","mean_temp","max_temp","min_temp","prcp_sum","OUTkgGlycol","decYear","sinDY","cosDY"),"CODload","CODrmk","",0.005,"User","tons","Unk","","00335","CODLoading")
 data_sub$RpLev <- ifelse(data_sub$CODrmk=="<",data_sub$CODload,0.05)
 
 data_sub_cens <- importQW(data_sub,c("Qmax","Eduration","snow_depth","GHCNDsnowDepth","mean_temp","max_temp","min_temp","prcp_sum","OUTkgGlycol","decYear","sinDY","cosDY"),"CODload","CODrmk","","RpLev","User","tons","Unk","","00335","CODLoading")
@@ -153,6 +160,7 @@ write.table(data_sub,file=paste(pathToSave,"/",siteName,investigateResponse,"Dat
 ##########################################################
 # Preliminary Assessment Plots:
 # pdf(paste(pathToSave,"/InitialQQGraphs",investigateResponse,".pdf",sep=""))
+pdf(paste(pathToSave,"/",investigateResponse,"_InitialQQGraphs.pdf",sep=""))
 pdf(paste(pathToSave,"/",siteName,investigateResponse,"_InitialQQGraphs.pdf",sep=""))
 plotQQTransforms(data_sub_cens,investigateResponse)
 predictVariableScatterPlots(data_sub_cens,investigateResponse)
@@ -177,10 +185,12 @@ modelReturn <- returnPrelim$DT.mod
 
 
 #Save plotSteps to file:
+pdf(paste(pathToSave,"/",investigateResponse,"_plotSteps.pdf",sep=""))
 pdf(paste(pathToSave,"/",siteName,investigateResponse,"_plotSteps.pdf",sep=""))
 plotSteps(steps,data_sub_cens,transformResponse)
 dev.off()
 
+pdf(paste(pathToSave,"/",investigateResponse,"_analyzeSteps.pdf",sep=""))
 pdf(paste(pathToSave,"/",siteName,investigateResponse,"_analyzeSteps.pdf",sep=""))
 analyzeSteps(steps, investigateResponse,siteINFO, xCorner = 0.01)
 dev.off()
@@ -189,6 +199,7 @@ dev.off()
 
 ##########################################################
 #Save steps to file:
+fileToSave <- paste(pathToSave,"/",investigateResponse,"_steps.csv",sep="")
 fileToSave <- paste(pathToSave,"/",siteName,investigateResponse,"_steps.csv",sep="")
 write.table(steps, fileToSave, row.names=FALSE, sep=",") 
 ##########################################################
@@ -200,10 +211,12 @@ choices <- generateParamChoices(predictVariables,modelReturn,pathToSave,save=TRU
 
 #####################################################
 # Plot summary plots:
+pdf(paste(pathToSave,"/",investigateResponse,"_summaryPlot_2.pdf",sep=""), paper="a4r") #a4r makes it landscape...if you want that
 pdf(paste(pathToSave,"/",siteName,investigateResponse,"_summaryPlot_2.pdf",sep=""), paper="a4r") #a4r makes it landscape...if you want that
 resultPlots(data_sub_cens,modelReturn,siteINFO)
 dev.off()
 
+pdf(paste(pathToSave,"/",investigateResponse,"_summaryResidPlot_2.pdf",sep=""), paper="a4r") #a4r makes it landscape...if you want that
 pdf(paste(pathToSave,"/",siteName,investigateResponse,"_summaryResidPlot_2.pdf",sep=""), paper="a4r") #a4r makes it landscape...if you want that
 resultResidPlots(data_sub_cens,modelReturn,siteINFO)
 dev.off()
@@ -211,6 +224,7 @@ dev.off()
 
 #####################################################
 # Print summary in console:
+fileName <- paste(pathToSave,"/",investigateResponse,"Summary_2.txt", sep="")
 fileName <- paste(pathToSave,"/",siteName,investigateResponse,"Summary_2.txt", sep="")
 
 sink(fileName)
@@ -248,6 +262,7 @@ data_sub$RpLev <- ifelse(data_sub$EGPGrmk=="<",data_sub$EGPGload,0.05)
 #data_subPre <- data_sub[which(data_sub$bpdate<strftime("2000-10-01","%Y-%m-%d")),]
 #data_subPost <- data_sub[which(data_sub$bpdate>=strftime("2000-10-01","%Y-%m-%d")),]
 #data_sub$BODrmk <- ifelse(data_sub$BODrmk==">","",data_sub$BODrmk)
+data_sub_cens <- importQW(data_sub,c("Qmax","Eduration","mean_temp","max_temp","min_temp","prcp_sum","OUTkgGlycol","decYear","sinDY","cosDY"),"EGPGload","EGPGrmk","",0.005,"User","tons","Unk","","91080","EGPGLoading")
 data_sub_cens <- importQW(data_sub,c("Qmax","Eduration","snow_depth","GHCNDsnowDepth","mean_temp","max_temp","min_temp","prcp_sum","OUTkgGlycol","decYear","sinDY","cosDY"),"EGPGload","EGPGrmk","","RpLev","User","tons","Unk","","91080","EGPGLoading")
 siteName <- "OutfallAll"
 siteNo <- '040871475'
@@ -262,6 +277,7 @@ write.table(data_sub,file=paste(pathToSave,"/",siteName,investigateResponse,"Dat
 ##########################################################
 # Preliminary Assessment Plots:
 # pdf(paste(pathToSave,"/InitialQQGraphs",investigateResponse,".pdf",sep=""))
+pdf(paste(pathToSave,"/",investigateResponse,"_InitialQQGraphs.pdf",sep=""))
 pdf(paste(pathToSave,"/",siteName,investigateResponse,"_InitialQQGraphs.pdf",sep=""))
 plotQQTransforms(data_sub_cens,investigateResponse)
 predictVariableScatterPlots(data_sub_cens,investigateResponse)
@@ -288,10 +304,12 @@ modelReturn <- returnPrelim$DT.mod
 #Save plotSteps to file:
 # source("/Users/jlthomps/Desktop/git/GLRIBMPs/plotStepsGLRI.R")
 # source("/Users/jlthomps/Desktop/git/GLRIBMPs/analyzeStepsGLRI.R")
+pdf(paste(pathToSave,"/",investigateResponse,"_plotSteps.pdf",sep=""))
 pdf(paste(pathToSave,"/",siteName,investigateResponse,"_plotSteps.pdf",sep=""))
 plotSteps(steps,data_sub_cens,transformResponse)
 dev.off()
 
+pdf(paste(pathToSave,"/",investigateResponse,"_analyzeSteps.pdf",sep=""))
 pdf(paste(pathToSave,"/",siteName,investigateResponse,"_analyzeSteps.pdf",sep=""))
 analyzeSteps(steps, investigateResponse,siteINFO, xCorner = 0.01)
 dev.off()
@@ -300,6 +318,7 @@ dev.off()
 
 ##########################################################
 #Save steps to file:
+fileToSave <- paste(pathToSave,"/",investigateResponse,"_steps.csv",sep="")
 fileToSave <- paste(pathToSave,"/",siteName,investigateResponse,"_steps.csv",sep="")
 write.table(steps, fileToSave, row.names=FALSE, sep=",") 
 ##########################################################
@@ -311,10 +330,12 @@ choices <- generateParamChoices(predictVariables,modelReturn,pathToSave,save=TRU
 
 #####################################################
 # Plot summary plots:
+pdf(paste(pathToSave,"/",investigateResponse,"_summaryPlot_2.pdf",sep=""), paper="a4r") #a4r makes it landscape...if you want that
 pdf(paste(pathToSave,"/",siteName,investigateResponse,"_summaryPlot_2.pdf",sep=""), paper="a4r") #a4r makes it landscape...if you want that
 resultPlots(data_sub_cens,modelReturn,siteINFO)
 dev.off()
 
+pdf(paste(pathToSave,"/",investigateResponse,"_summaryResidPlot_2.pdf",sep=""), paper="a4r") #a4r makes it landscape...if you want that
 pdf(paste(pathToSave,"/",siteName,investigateResponse,"_summaryResidPlot_2.pdf",sep=""), paper="a4r") #a4r makes it landscape...if you want that
 resultResidPlots(data_sub_cens,modelReturn,siteINFO)
 dev.off()
@@ -387,4 +408,4 @@ for (i in 1:nrow(data_sub)) {
 pdf(fileName <- paste(pathToSave,"/","Outfall","CODvsTheorCOD.pdf",sep=""))
 plot(as.numeric(data_sub$CODconc),data_sub$TheorCOD,xlab="COD",ylab="Theoretical COD",col="blue",type="p",main=paste(siteName,"COD vs Theoretical COD",sep=" "))
 dev.off()
-
+dev.off()
