@@ -1,13 +1,7 @@
-data <- formatAbsSamples(dateLower='20130930',dateUpper='20140918',Type='All',Project='GMIA')
+library(USGSAqualogFormatting)
+FinalAbsDf <- formatAbsSamples(dateLower='20130930',dateUpper='20140918',Type='All',Project='GMIA')
 # had to do some fooling around in function b/c of missing files in 20140121
 # also added Project ID to name so can differentiate OUT/LK/CG
-
-dateRangeFiles<-dateRangeFiles[c(1:21,23:73)]
-dateLower='20130930'
-dateUpper='20140918'
-Type='All'
-Project='GMIA'
-
 
 testnames <- colnames(FinalAbsDf)
 testnames <- gsub("USGS","Group",testnames)
@@ -18,7 +12,9 @@ test <- data.frame(testnames,stringsAsFactors=FALSE)
 colnames(test) <- "GRnumber"
 #testAbs <- getAbs(FinalAbsDf,"Wavelength",wavs,"Group",test,"GRnumber")
 wavs <- unique(FinalAbsDf$Wavelength)
+library(USGSHydroOpt)
 testAbs <- getAbs(FinalAbsDf,"Wavelength",wavs,"Group",test,"GRnumber")
+setwd("C:/Users/jlthomps/Desktop/git/GMIA/")
 write.csv(testAbs,file="testAbs.csv")
 write.csv(FinalAbsDf,file="FinalAbsDf.csv")
 
@@ -42,26 +38,110 @@ testAbsOUT <- testAbs[grep("OUT-",testAbs$ProjectID),]
 testAbsCG <- testAbs[grep("CG-",testAbs$ProjectID),]
 testAbsLK <- testAbs[grep("LK-",testAbs$ProjectID),]
 
-Glycol2014 <- read.csv(file="2014Glycol.csv",stringsAsFactors=FALSE)
-Glycol2014$ProjectID <- paste(Glycol2014$Site,Glycol2014$Storm,sep="-")
-dataMerge <- merge(Glycol2014,testAbsOUT,by="ProjectID")
+#Glycol2014 <- read.csv(file="2014Glycol.csv",stringsAsFactors=FALSE)
+#Glycol2014$ProjectID <- paste(Glycol2014$Site,Glycol2014$Storm,sep="-")
+#dataMerge <- merge(Glycol2014,testAbsOUTCG,by="ProjectID")
+
+library(dataRetrieval)
+#OutCOD <- getNWISqwData('040871475','00335','2013-09-30','2014-10-01',expanded=TRUE)
+#CgCOD <- getNWISqwData('040871476','00335','2013-09-30','2014-10-01',expanded=TRUE)
+#LkCOD <- getNWISqwData('040871488','00335','2013-09-30','2014-10-01',expanded=TRUE)
+
+COD2014 <- read.csv(file="COD2014.csv",stringsAsFactors=FALSE)
+COD2014$ProjectID <- paste(COD2014$Site,COD2014$Storm,sep="-")
+dataMerge <- merge(COD2014,testAbsOUT,by="ProjectID")
+
 library(GSqwsr)
+dataMerge <- dataMerge[which(!is.na(dataMerge$COD)),]
 dataMerge$decYear <- getDecYear(dataMerge$datetime)
 dataMerge$sinDY <- sin(dataMerge$decYear*2*pi)
 dataMerge$cosDY <- cos(dataMerge$decYear*2*pi)
 dataMerge$remark <- ""
-dataMerge <- transform(dataMerge,app600=(A617+A620+A623+A626+A629+A632+A635+A638+A641+A644)/10) 
-dataMerge <- transform(dataMerge,app500=(A488+A491+A494+A497+A500+A503+A506+A509)/8)
-dataMerge <- transform(dataMerge,app420=(A416+A419+A422+A425+A428+A431+A434)/7)
-data_sub <- dataMerge[,c("datetime","remark","EG","decYear","sinDY","cosDY","app600","app500","app420")]
-data_sub_cens <- importQW(data_sub,c("decYear","sinDY","cosDY","app600","app500","app420"),"EG","remark","",0.0000002,"User","kg","Unk","","91075","EG")
+dataMerge <- transform(dataMerge,app600=(A617+A620+A623+A626+A629+A632+A635+A638+A641+A644)) 
+dataMerge <- transform(dataMerge,app500=(A488+A491+A494+A497+A500+A503+A506+A509))
+dataMerge <- transform(dataMerge,app420=(A416+A419+A422+A425+A428+A431+A434))
+data_sub <- dataMerge[,c("remark","COD","decYear","app600","app500","app420")]
+
+data_sub_cens <- importQW(data_sub,keep=c("decYear","app600","app500","app420"),"COD","remark","",0.0000002,"User","kg","Unk","","00335","CODcens")
 siteName <- "GMIA"
 siteNo <- '040871475'
 siteINFO <-  getNWISSiteInfo(siteNo)
 # name of value column in data_sub_cens object
-investigateResponse <- "EG"
+investigateResponse <- "CODcens"
 # choose 'normal' or 'lognormal' distribution for data
 transformResponse <- "lognormal"
 
-pathToSave <- paste("/Users/jlthomps/",siteName,sep="")
+pathToSave <- paste("/Users/jlthomps/Documents/R/",siteName,sep="")
+
+##########################################################
+# Preliminary Assessment Plots:
+# pdf(paste(pathToSave,"/InitialQQGraphs",investigateResponse,".pdf",sep=""))
+pdf(paste(pathToSave,"/",investigateResponse,"_InitialQQGraphs.pdf",sep=""))
+plotQQTransforms(data_sub_cens,investigateResponse)
+predictVariableScatterPlots(data_sub_cens,investigateResponse)
+dev.off()
+##########################################################
+
+#################################################################################################
+#Kitchen sink:
+predictVariables <- names(data_sub_cens)[-which(names(data_sub_cens) %in% investigateResponse)]
+predictVariables <- predictVariables[which(predictVariables != "datetime")]
+predictVariables <- predictVariables[which(predictVariables != "decYear")]
+kitchenSink <- createFullFormula(data_sub_cens,investigateResponse)
+
+returnPrelim <- prelimModelDev(data_sub_cens,investigateResponse,kitchenSink,
+                               "BIC", #Other option is "AIC"
+                               transformResponse)
+
+steps <- returnPrelim$steps
+modelResult <- returnPrelim$modelStuff
+modelReturn <- returnPrelim$DT.mod
+colnames(steps) <- c("step","BIC","Deviance","Resid.Dev","Resid.Df","Correlation","Slope","RMSE","PRESS","scope","response")
+
+
+#Save plotSteps to file:
+source("/Users/jlthomps/Desktop/git/GLRIBMPs/plotStepsGLRI.R")
+source("/Users/jlthomps/Desktop/git/GLRIBMPs/analyzeStepsGLRI.R")
+pdf(paste(pathToSave,"/",investigateResponse,"_plotSteps.pdf",sep=""))
+plotStepsGLRI(steps,data_sub_cens,transformResponse)
+dev.off()
+
+pdf(paste(pathToSave,"/",investigateResponse,"_analyzeSteps.pdf",sep=""))
+analyzeStepsGLRI(steps, investigateResponse,siteINFO, xCorner = 0.01)
+dev.off()
+
+#################################################################################################
+
+##########################################################
+#Save steps to file:
+fileToSave <- paste(pathToSave,"/",investigateResponse,"_steps.csv",sep="")
+write.table(steps, fileToSave, row.names=FALSE, sep=",") 
+##########################################################
+
+##########################################################
+# Generate a csv file to customize model parameters (can do without running kitchen sink):
+choices <- generateParamChoices(predictVariables,modelReturn,pathToSave,save=TRUE)
+##########################################################
+
+##########################################################
+#Example of how to remove auto-generated outliers:
+outliers <- findOutliers(modelReturn,data_sub_cens,transformResponse)
+if(length(outliers) >0) data_sub_cens <- data_sub_cens[-outliers,]
+##########################################################
+
+#####################################################
+# Print summary in console:
+source("/Users/jlthomps/Desktop/git/GLRIBMPs/summaryPrintoutGLRI.R")
+fileName <- paste(pathToSave,"/", investigateResponse,"Summary_2.txt", sep="")
+summaryPrintoutGLRI(modelReturn, steps, siteINFO, saveOutput=TRUE,fileName)
+#####################################################
+
+
+#Want to save a dataframe (aka, save an output)?
+fileToSave <- paste(pathToSave, "modelResult.csv",sep="/")
+write.table(modelResult, fileToSave, row.names=FALSE, sep=",")  
+
+# Probably want to save data at this point:
+fileToSave <- paste(pathToSave, "regressionData.csv",sep="/")
+write.table(data_sub, fileToSave, row.names=FALSE, sep=",")
 
