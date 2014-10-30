@@ -49,7 +49,7 @@ library(dataRetrieval)
 setwd("C:/Users/jlthomps/Desktop/git/GMIA")
 COD2014 <- read.csv(file="COD2014.csv",stringsAsFactors=FALSE)
 COD2014$ProjectID <- paste(COD2014$Site,COD2014$Storm,sep="-")
-dataMerge <- merge(COD2014,testAbsOUT,by="ProjectID")
+dataMerge <- merge(COD2014,testAbs,by="ProjectID")
 
 library(GSqwsr)
 dataMerge <- dataMerge[which(!is.na(dataMerge$COD)),]
@@ -61,7 +61,7 @@ dataMerge <- transform(dataMerge,app600=(A617+A620+A623+A626+A629+A632+A635+A638
 dataMerge <- transform(dataMerge,app500=(A488+A491+A494+A497+A500+A503+A506+A509))
 dataMerge <- transform(dataMerge,app420=(A416+A419+A422+A425+A428+A431+A434))
 data_sub <- dataMerge[,c("remark","COD","decYear","app600","app500","app420","A800","A797","A794","A791","A788","A785","A782","A779","A776","A773","A770","A767","A764","A761","A758","A755","A752","A749","A746","A743","A740","A737","A734","A731","A728","A725","A722","A719","A716","A713","A710","A707","A704","A701","A698","A695","A692","A689","A686","A683","A680","A677","A674","A671","A668","A665","A662","A659","A656","A653","A650","A647","A644","A641","A638","A635","A632","A629","A626","A623","A620","A617","A614","A611","A608","A605","A602","A599","A596","A593","A590","A587","A584","A581","A578","A575","A572","A569","A566","A563","A560","A557","A554","A551","A548","A545","A542","A539","A536","A533","A530","A527","A524","A521","A518","A515","A512","A509","A506","A503","A500","A497","A494","A491","A488","A485","A482","A479","A476","A473","A470","A467","A464","A461","A458","A455","A452","A449","A446","A443","A440","A437","A434","A431","A428","A425","A422","A419","A416","A413","A410","A407","A404","A401","A398","A395","A392","A389","A386","A383","A380","A377","A374","A371","A368","A365","A362","A359","A356","A353","A350","A347","A344","A341","A338","A335","A332","A329","A326","A323","A320","A317","A314","A311","A308","A305","A302","A299","A296","A293","A290","A287","A284","A281","A278","A275","A272","A269","A266","A263","A260","A257","A254","A251","A248","A245","A242","A239")]
-data_sub <- dataMerge[,c("remark","COD","decYear","A788","A731","A722","A719","A716","A713","A587","A506","A503","A500","A428","A242","A239")]
+#data_sub <- dataMerge[,c("remark","COD","decYear","A788","A731","A722","A719","A716","A713","A587","A506","A503","A500","A428","A242","A239")]
 
 keepAll <- colnames(data_sub)
 keepAll <- keepAll[-which(keepAll %in% c("remark","COD"))]
@@ -99,7 +99,7 @@ returnPrelim <- prelimModelDev(data_sub_cens,investigateResponse,kitchenSink,
 steps <- returnPrelim$steps
 modelResult <- returnPrelim$modelStuff
 modelReturn <- returnPrelim$DT.mod
-colnames(steps) <- c("step","BIC","Deviance","Resid.Dev","Resid.Df","Correlation","Slope","RMSE","PRESS","scope","response")
+#colnames(steps) <- c("step","BIC","Deviance","Resid.Dev","Resid.Df","Correlation","Slope","RMSE","PRESS","scope","response")
 
 
 #Save plotSteps to file:
