@@ -1,13 +1,15 @@
 library(USGSAqualogFormatting)
-FinalAbsDf <- formatAbsSamples(dateLower='20130930',dateUpper='20140918',Type='All',Project='GMIA')
-# had to do some fooling around in function b/c of missing files in 20140121
+source("C:/Users/jlthomps/Desktop/git/GMIA/formatAbsSamplesJT.R")
+FinalAbsDf <- formatAbsSamplesJT(dateLower='20130930',dateUpper='20140918',Type='All',Project='GMIA')
+#FinalAbsDfSESQ <- formatAbsSamplesJT(dateLower='20130930',dateUpper='20140918',Type='All',Project='SESQA')
+# had to do some fooling around in function b/c of missing files in 20140121b
 # also added Project ID to name so can differentiate OUT/LK/CG
 
 testnames <- colnames(FinalAbsDf)
 testnames <- gsub("USGS","Group",testnames)
 colnames(FinalAbsDf) <- testnames
 #wavs <- c(251,254,257)
-testnames <- testnames[1:93]
+testnames <- testnames[1:115]
 test <- data.frame(testnames,stringsAsFactors=FALSE)
 colnames(test) <- "GRnumber"
 #testAbs <- getAbs(FinalAbsDf,"Wavelength",wavs,"Group",test,"GRnumber")
@@ -27,16 +29,33 @@ temp3 <- temp
 for (i in 1:length(temp)) {
   a <- temp[i]
   b <- unlist(strsplit(a,"_"))
-  c <- length(b)
-  temp3[i] <- b[c]
+  #c <- length(b)
+  temp3[i] <- b[1]
 }
 
 testAbs$date <- temp2
 testAbs$ProjectID <- temp3
 testAbs$datetime <- strptime(testAbs$date,format="%Y%m%d")
-testAbsOUT <- testAbs[grep("OUT-",testAbs$ProjectID),]
+testAbsGMIA <- testAbs[substr(testAbs$ProjectID,1,2) %in% c("OU","Ou","CG","LK","US"),]
+testAbsOUT <- testAbs[substr(testAbs$ProjectID,1,2) %in% c("OU","Ou"),]
+testAbsOUT <- testAbsOUT[-grep("-R",testAbsOUT$ProjectID),]
+testAbsOUT <- testAbsOUT[which(paste(testAbsOUT$ProjectID,testAbsOUT$date,sep="")!="OUT-S10720140225"),]
+testAbsOUT <- testAbsOUT[which(paste(testAbsOUT$ProjectID,testAbsOUT$date,sep="")!="OUT-S107G20140225"),]
+testAbsOUT <- testAbsOUT[which(substr(testAbsOUT$GRnumber,1,18)!="OUT-S110G_Group003"),]
+testAbsOUT$ProjectID <- gsub('Out','OUT',testAbsOUT$ProjectID)
+
 testAbsCG <- testAbs[grep("CG-",testAbs$ProjectID),]
+testAbsCG <- testAbsCG[which(paste(testAbsCG$ProjectID,testAbsCG$date,sep="")!="CG-S10720140225"),]
+testAbsCG <- testAbsCG[which(testAbsCG$ProjectID!="CG-Q23C"),]
+
 testAbsLK <- testAbs[grep("LK-",testAbs$ProjectID),]
+testAbsLK <- testAbsLK[which(testAbsLK$ProjectID!="LK-Q23C"),]
+testAbsLK <- testAbsLK[-grep("-R",testAbsLK$ProjectID),]
+testAbsLK <- testAbsLK[which(paste(testAbsLK$ProjectID,testAbsLK$date,sep="")!="LK-S10720140225"),]
+testAbsLK <- testAbsLK[which(paste(testAbsLK$ProjectID,testAbsLK$date,sep="")!="LK-S107G20140225"),]
+
+testAbsWorking <- rbind(testAbsOUT,testAbsCG)
+testAbsWorking <- rbind(testAbsWorking,testAbsLK)
 
 #Glycol2014 <- read.csv(file="2014Glycol.csv",stringsAsFactors=FALSE)
 #Glycol2014$ProjectID <- paste(Glycol2014$Site,Glycol2014$Storm,sep="-")
@@ -49,7 +68,7 @@ library(dataRetrieval)
 setwd("C:/Users/jlthomps/Desktop/git/GMIA")
 COD2014 <- read.csv(file="COD2014.csv",stringsAsFactors=FALSE)
 COD2014$ProjectID <- paste(COD2014$Site,COD2014$Storm,sep="-")
-dataMerge <- merge(COD2014,testAbs,by="ProjectID")
+dataMerge <- merge(COD2014,testAbsWorking,by="ProjectID")
 
 library(GSqwsr)
 dataMerge <- dataMerge[which(!is.na(dataMerge$COD)),]
