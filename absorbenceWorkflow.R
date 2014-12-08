@@ -22,6 +22,8 @@ FinalAbsDf <- FinalAbsDf[,finalcols]
 setwd("C:/Users/jlthomps/Desktop/git/GMIA/")
 write.csv(testAbs,file="testAbs.csv")
 write.csv(FinalAbsDf,file="FinalAbsDf.csv")
+save(testAbs,file="testAbs.RData")
+save(FinalAbsDf,file="FinalAbsDf.RData")
 
 finalcolsOUT <- finalcols[which(substr(finalcols,1,2) %in% c("OU","Ou"))]
 finalcolsCG <- finalcols[which(substr(finalcols,1,2) %in% c("CG"))]
