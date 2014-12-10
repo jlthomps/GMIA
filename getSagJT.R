@@ -18,7 +18,7 @@ getSagJT <- function (dataAbs, waveCol, sag, colSubsetString, dataSummary,
       Sag <- c(Sag, -coef(lm(y ~ x))[2])
     }
     SagName <- paste("Sag", sag[j, 1], "_", sag[j, 2], sep = "")
-    dfSag <- data.frame(Sag, names(df))
+    dfSag <- data.frame(Sag, names(df),stringsAsFactors=FALSE)
     names(dfSag) <- c(SagName, grnum)
     dataSummary <- merge(dataSummary, dfSag, by = grnum, 
                          all = TRUE)
