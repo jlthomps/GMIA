@@ -1,29 +1,7 @@
 library(USGSAqualogFormatting)
-source("C:/Users/jlthomps/Desktop/git/GMIA/formatAbsSamplesJT.R")
-FinalAbsDf <- formatAbsSamplesJT(dateLower='20130930',dateUpper='20140918',Type='All',Project='GMIA')
-#FinalAbsDfSESQ <- formatAbsSamplesJT(dateLower='20130930',dateUpper='20140918',Type='All',Project='SESQA')
-# had to do some fooling around in function b/c of missing files in 20140121b
-# also added Project ID to name so can differentiate OUT/LK/CG
-
-testnames <- colnames(FinalAbsDf)
-testnames <- gsub("USGS","Group",testnames)
-colnames(FinalAbsDf) <- testnames
-#wavs <- c(251,254,257)
-testnames <- testnames[1:115]
-test <- data.frame(testnames,stringsAsFactors=FALSE)
-colnames(test) <- "GRnumber"
-wavs <- unique(FinalAbsDf$Wavelength)
-wavs <- wavs[which(wavs<=700)]
-library(USGSHydroOpt)
-testAbs <- getAbs(FinalAbsDf,"Wavelength",wavs,"Group",test,"GRnumber")
-finalcols <- colnames(FinalAbsDf)
-finalcols <- finalcols[which(substr(finalcols,1,2) %in% c("OU","Ou","CG","LK","OA","Wa"))]
-FinalAbsDf <- FinalAbsDf[,finalcols]
-setwd("C:/Users/jlthomps/Desktop/git/GMIA/")
-write.csv(testAbs,file="testAbs.csv")
-write.csv(FinalAbsDf,file="FinalAbsDf.csv")
-save(testAbs,file="testAbs.RData")
-save(FinalAbsDf,file="FinalAbsDf.RData")
+setwd("/Users/jlthomps/GMIA")
+load("testAbs.RData")
+load("FinalAbsDf.RData")
 
 finalcols <- colnames(FinalAbsDf)
 finalcols <- finalcols[which(substr(finalcols,1,2) %in% c("OU","Ou","CG","LK","OA","Wa"))]
@@ -117,6 +95,10 @@ library(dataRetrieval)
 COD2014 <- read.csv(file="COD2014.csv",stringsAsFactors=FALSE)
 COD2014$ProjectID <- paste(COD2014$Site,COD2014$Storm,sep="-")
 dataMerge <- merge(COD2014,GMIASag,by="ProjectID")
+WTempOUT <- readNWISuv("040871475","00010",startDate="2013-12-01",endDate="",tz="")
+WTempLK <- readNWISuv("040871488","00010",startDate="2013-12-01",endDate="",tz="")
+WTempCG <- readNWISuv("040871476","00010",startDate="2013-12-01",endDate="",tz="")
+WTempOAK <- readNWISuv("040872015","00010",startDate="2013-12-01",endDate="",tz="")
 
 library(GSqwsr)
 dataMerge <- dataMerge[which(!is.na(dataMerge$COD)),]

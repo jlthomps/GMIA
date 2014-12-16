@@ -42,6 +42,13 @@ plotStepsGMIA <- function (steps, localDT, transformResponse = "lognormal")
     }
     abline(lineFit, col = "red")
     abline(0, 1, col = "blue")
+    formulaToUse <- steps$scope[i]
+    formulaSplit <- unlist(strsplit(formulaToUse,'+',fixed=TRUE))
+    coefs <- coef(modelReturn)
+    signs <- ifelse(coefs<0,'-','+')
+    formulaToUse <- paste(signs[-1],formulaSplit[-1],sep="")
+    formulaToUse <- paste(formulaToUse,collapse="")
+    formulaToUse <- paste(responseVariable, formulaToUse, sep = " ~ ")
     mtext(formulaToUse, side = 3, line = -1, cex = 0.7)
     corStep <- cor(df$obs, df$pred)
     goodness <- paste("slope: ", formatC(lineFit$coefficients[2], 
