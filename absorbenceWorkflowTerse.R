@@ -1,5 +1,5 @@
-library(USGSAqualogFormatting)
-setwd("/Users/jlthomps/GMIA")
+
+setwd("/Users/jlthomps/Desktop/git/GMIA")
 load("testAbs.RData")
 load("FinalAbsDf.RData")
 
@@ -82,26 +82,43 @@ testAbsWorking <- rbind(testAbsOUT,testAbsCG)
 testAbsWorking <- rbind(testAbsWorking,testAbsLK)
 testAbsWorking <- rbind(testAbsWorking,testAbsOAK)
 
-sag <- read.csv("SagVals.csv",stringsAsFactors=FALSE)
-colSubsetString <- "Gr"
-dataSummary <- testAbsWorking
-grnum <- "GRnumber"
-source("/Users/jlthomps/GMIA/getSagJT.R")
-GMIASag <- getSagJT(FinalAbsDf,WaveCol,sag,colSubsetString,dataSummary,"GRnumber")
-
-
 library(dataRetrieval)
-#setwd("C:/Users/jlthomps/GMIA")
 COD2014 <- read.csv(file="COD2014.csv",stringsAsFactors=FALSE)
 COD2014$ProjectID <- paste(COD2014$Site,COD2014$Storm,sep="-")
-dataMerge <- merge(COD2014,GMIASag,by="ProjectID")
+COD2014$startDatetime <- strptime(COD2014$startDate,"%m/%d/%Y %H:%M")
+COD2014$endDatetime <- strptime(COD2014$endDate,"%m/%d/%Y %H:%M")
 WTempOUT <- readNWISuv("040871475","00010",startDate="2013-12-01",endDate="",tz="")
 WTempLK <- readNWISuv("040871488","00010",startDate="2013-12-01",endDate="",tz="")
 WTempCG <- readNWISuv("040871476","00010",startDate="2013-12-01",endDate="",tz="")
 WTempOAK <- readNWISuv("040872015","00010",startDate="2013-12-01",endDate="",tz="")
 
+COD2014 <- COD2014[which(!is.na(COD2014$startDatetime)),]
+COD2014[which(nchar(COD2014$endDate)==0),]$endDatetime <- COD2014[which(nchar(COD2014$endDate)==0),]$startDatetime+900
+COD2014[which(nchar(COD2014$endDate)==0),]$startDatetime <- COD2014[which(nchar(COD2014$endDate)==0),]$startDatetime-900
+
+COD2014CG <- COD2014[which(COD2014$Site=="CG"),]
+library(USGSHydroTools)
+COD2014CGTemp <- TSstormstats(WTempCG,date="dateTime","X_00010_00011",COD2014CG,starttime="startDatetime",endtime="endDatetime",stats.return="mean",out.varname="temp")
+COD2014OUT <- COD2014[which(COD2014$Site=="OUT"),]
+COD2014OUTTemp <- TSstormstats(WTempOUT,date="dateTime","X_00010_00011",COD2014OUT,starttime="startDatetime",endtime="endDatetime",stats.return="mean",out.varname="temp")
+COD2014LK <- COD2014[which(COD2014$Site=="LK"),]
+COD2014LKTemp <- TSstormstats(WTempLK,date="dateTime","X_00010_00011",COD2014LK,starttime="startDatetime",endtime="endDatetime",stats.return="mean",out.varname="temp")
+COD2014ALL <- rbind(COD2014CGTemp,COD2014OUTTemp)
+COD2014ALL <- rbind(COD2014ALL,COD2014LKTemp)
+
+sag <- read.csv("SagVals.csv",stringsAsFactors=FALSE)
+colSubsetString <- "Gr"
+dataSummary <- testAbsWorking
+grnum <- "GRnumber"
+source("/Users/jlthomps/Desktop/git/GMIA/getSagJT.R")
+GMIASag <- getSagJT(FinalAbsDf,WaveCol,sag,colSubsetString,dataSummary,"GRnumber")
+
+dataMerge <- merge(COD2014ALL,GMIASag,by="ProjectID")
+
+
 library(GSqwsr)
 dataMerge <- dataMerge[which(!is.na(dataMerge$COD)),]
+dataMerge <- dataMerge[which(!is.na(dataMerge$temp_mean)),]
 dataMerge$decYear <- getDecYear(dataMerge$datetime)
 dataMerge$sinDY <- sin(dataMerge$decYear*2*pi)
 dataMerge$cosDY <- cos(dataMerge$decYear*2*pi)
@@ -110,7 +127,7 @@ dataMerge$remark <- ""
 #dataMerge <- transform(dataMerge,app500=(A488+A491+A494+A497+A500+A503+A506+A509))
 #dataMerge <- transform(dataMerge,app420=(A416+A419+A422+A425+A428+A431+A434))
 keepCols <- colnames(dataMerge)
-keepCols <- keepCols[-which(keepCols %in% c("ProjectID","Storm","Volume","GRnumber","date","datetime"))]
+keepCols <- keepCols[-which(keepCols %in% c("ProjectID","Storm","Volume","GRnumber","date","datetime","startDate","endDate","startDatetime","endDatetime"))]
 data_sub <- dataMerge[,keepCols]
 #data_sub <- dataMerge[,c("remark","COD","decYear","A788","A731","A722","A719","A716","A713","A587","A506","A503","A500","A428","A242","A239")]
 data_sub$Site <- ifelse(data_sub$Site=='CG','2',ifelse(data_sub$Site=='LK','1',ifelse(data_sub$Site=='OAK','3','4')))
@@ -118,7 +135,7 @@ data_sub$Site <- ifelse(data_sub$Site=='CG','2',ifelse(data_sub$Site=='LK','1',i
 keepAll <- colnames(data_sub)
 keepAll <- keepAll[-which(keepAll %in% c("remark","COD"))]
 data_sub_cens <- importQW(data_sub,keep=keepAll,"COD","remark","",0.0000002,"User","kg","Unk","","00335","CODcens")
-siteName <- "GMIA"
+siteName <- "GMIAwithTemp"
 siteNo <- '040871475'
 siteINFO <-  readNWISsite(siteNo)
 siteINFO$station.nm <- siteINFO$station_nm
@@ -134,7 +151,7 @@ pathToSave <- paste("/Users/jlthomps/Documents/R/",siteName,sep="")
 predictVariables <- names(data_sub_cens)[-which(names(data_sub_cens) %in% investigateResponse)]
 predictVariables <- predictVariables[which(predictVariables != "datetime")]
 predictVariables <- predictVariables[which(predictVariables != "decYear")]
-kitchenSink <- createFullFormula(data_sub_cens[,2:171],investigateResponse)
+kitchenSink <- createFullFormula(data_sub_cens[,2:172],investigateResponse)
 
 returnPrelim <- prelimModelDev(data_sub_cens,investigateResponse,kitchenSink,
                                "BIC", #Other option is "AIC"
@@ -143,7 +160,7 @@ returnPrelim <- prelimModelDev(data_sub_cens,investigateResponse,kitchenSink,
 steps <- returnPrelim$steps
 modelResult <- returnPrelim$modelStuff
 modelReturn <- returnPrelim$DT.mod
-source("/Users/jlthomps/GMIA/plotStepsGMIA.R")
+source("/Users/jlthomps/Desktop/git/GMIA/plotStepsGMIA.R")
 pdf(paste(pathToSave,"/",investigateResponse,"_plotSteps.pdf",sep=""))
 plotStepsGMIA(steps,data_sub_cens,transformResponse)
 dev.off()
@@ -167,263 +184,4 @@ fileName <- paste(pathToSave,"/", investigateResponse,"Summary_2.txt", sep="")
 summaryPrintout(modelReturn, siteINFO, saveOutput=TRUE,fileName)
 #####################################################
 
-dataMergeOUTCG <- dataMerge[which(dataMerge$Site %in% c("CG","OUT")),]
-data_sub <- dataMergeOUTCG[,c("remark","COD","decYear","A788","A785","A782","A773","A770","A767","A662","A659","A656","A653","A650","A647","A644","A641","A638","A635","A632","A629","A626","A623","A620","A617","A614","A611","A551","A548","A545","A542","A539","A536","A533","A530","A527","A524","A521","A518","A506","A503","A500","A491","A488","A485","A482","A479","A476","A473","A293","A290","A287","A284","A281","A263","A260","A257","A254","A251","A248","A245","A242","A239","Sag239_242.x","Sag248_254.x","Sag251_257.x","Sag257_263.x","Sag281_287.x","Sag287_293.x","Sag473_479.x","Sag482_488","Sag485_491","Sag497_503","Sag500_506","Sag518_524","Sag530_536","Sag542_548","Sag545_551","Sag611_617","Sag617_623","Sag629_635","Sag635_641","Sag641_647","Sag650_656","Sag656_662","Sag767_773","Sag782_788")]
-data_sub_cens <- importQW(data_sub,keep=keepAll,"COD","remark","",0.0000002,"User","kg","Unk","","00335","CODcens")
-siteName <- "GMIAOUTCG"
-siteNo <- '040871475'
-siteINFO <-  getNWISSiteInfo(siteNo)
-siteINFO$station.nm <- siteINFO$station_nm
-# name of value column in data_sub_cens object
-investigateResponse <- "CODcens"
-# choose 'normal' or 'lognormal' distribution for data
-transformResponse <- "lognormal"
-
-pathToSave <- paste("/Users/jlthomps/Documents/R/",siteName,sep="")
-
-#################################################################################################
-#Kitchen sink:
-predictVariables <- names(data_sub_cens)[-which(names(data_sub_cens) %in% investigateResponse)]
-predictVariables <- predictVariables[which(predictVariables != "datetime")]
-predictVariables <- predictVariables[which(predictVariables != "decYear")]
-kitchenSink <- createFullFormula(data_sub_cens,investigateResponse)
-
-returnPrelim <- prelimModelDev(data_sub_cens,investigateResponse,kitchenSink,
-                               "BIC", #Other option is "AIC"
-                               transformResponse)
-
-steps <- returnPrelim$steps
-modelResult <- returnPrelim$modelStuff
-modelReturn <- returnPrelim$DT.mod
-
-pdf(paste(pathToSave,"/",investigateResponse,"_plotSteps.pdf",sep=""))
-plotSteps(steps,data_sub_cens,transformResponse)
-dev.off()
-
-pdf(paste(pathToSave,"/",investigateResponse,"_analyzeSteps.pdf",sep=""))
-analyzeSteps(steps, investigateResponse,siteINFO, xCorner = 0.01)
-dev.off()
-
-#################################################################################################
-
-##########################################################
-#Save steps to file:
-fileToSave <- paste(pathToSave,"/",investigateResponse,"_steps.csv",sep="")
-write.table(steps, fileToSave, row.names=FALSE, sep=",") 
-##########################################################
-
-#####################################################
-# Print summary in console:
-#source("/Users/jlthomps/Desktop/git/GLRIBMPs/summaryPrintoutGLRI.R")
-fileName <- paste(pathToSave,"/", investigateResponse,"Summary_2.txt", sep="")
-summaryPrintout(modelReturn, siteINFO, saveOutput=TRUE,fileName)
-#####################################################
-
-dataMergeOUT <- dataMerge[which(dataMerge$Site=="OUT"),]
-data_sub <- dataMergeOUT[,c("remark","COD","decYear","A788","A785","A782","A773","A770","A767","A662","A659","A656","A653","A650","A647","A644","A641","A638","A635","A632","A629","A626","A623","A620","A617","A614","A611","A551","A548","A545","A542","A539","A536","A533","A530","A527","A524","A521","A518","A506","A503","A500","A491","A488","A485","A482","A479","A476","A473","A293","A290","A287","A284","A281","A263","A260","A257","A254","A251","A248","A245","A242","A239","Sag239_242.x","Sag248_254.x","Sag251_257.x","Sag257_263.x","Sag281_287.x","Sag287_293.x","Sag473_479.x","Sag482_488","Sag485_491","Sag497_503","Sag500_506","Sag518_524","Sag530_536","Sag542_548","Sag545_551","Sag611_617","Sag617_623","Sag629_635","Sag635_641","Sag641_647","Sag650_656","Sag656_662","Sag767_773","Sag782_788")]
-data_sub_cens <- importQW(data_sub,keep=keepAll,"COD","remark","",0.0000002,"User","kg","Unk","","00335","CODcens")
-siteName <- "GMIAOUT"
-siteNo <- '040871475'
-siteINFO <-  getNWISSiteInfo(siteNo)
-siteINFO$station.nm <- siteINFO$station_nm
-# name of value column in data_sub_cens object
-investigateResponse <- "CODcens"
-# choose 'normal' or 'lognormal' distribution for data
-transformResponse <- "lognormal"
-
-pathToSave <- paste("/Users/jlthomps/Documents/R/",siteName,sep="")
-
-#################################################################################################
-#Kitchen sink:
-predictVariables <- names(data_sub_cens)[-which(names(data_sub_cens) %in% investigateResponse)]
-predictVariables <- predictVariables[which(predictVariables != "datetime")]
-predictVariables <- predictVariables[which(predictVariables != "decYear")]
-kitchenSink <- createFullFormula(data_sub_cens,investigateResponse)
-
-returnPrelim <- prelimModelDev(data_sub_cens,investigateResponse,kitchenSink,
-                               "BIC", #Other option is "AIC"
-                               transformResponse)
-
-steps <- returnPrelim$steps
-modelResult <- returnPrelim$modelStuff
-modelReturn <- returnPrelim$DT.mod
-
-pdf(paste(pathToSave,"/",investigateResponse,"_plotSteps.pdf",sep=""))
-plotSteps(steps,data_sub_cens,transformResponse)
-dev.off()
-
-pdf(paste(pathToSave,"/",investigateResponse,"_analyzeSteps.pdf",sep=""))
-analyzeSteps(steps, investigateResponse,siteINFO, xCorner = 0.01)
-dev.off()
-
-#################################################################################################
-
-##########################################################
-#Save steps to file:
-fileToSave <- paste(pathToSave,"/",investigateResponse,"_steps.csv",sep="")
-write.table(steps, fileToSave, row.names=FALSE, sep=",") 
-##########################################################
-
-#####################################################
-# Print summary in console:
-#source("/Users/jlthomps/Desktop/git/GLRIBMPs/summaryPrintoutGLRI.R")
-fileName <- paste(pathToSave,"/", investigateResponse,"Summary_2.txt", sep="")
-summaryPrintout(modelReturn, siteINFO, saveOutput=TRUE,fileName)
-#####################################################
-
-dataMergeCG <- dataMerge[which(dataMerge$Site=="CG"),]
-data_sub <- dataMergeCG[,c("remark","COD","decYear","A788","A785","A782","A773","A770","A767","A662","A659","A656","A653","A650","A647","A644","A641","A638","A635","A632","A629","A626","A623","A620","A617","A614","A611","A551","A548","A545","A542","A539","A536","A533","A530","A527","A524","A521","A518","A506","A503","A500","A491","A488","A485","A482","A479","A476","A473","A293","A290","A287","A284","A281","A263","A260","A257","A254","A251","A248","A245","A242","A239","Sag239_242.x","Sag248_254.x","Sag251_257.x","Sag257_263.x","Sag281_287.x","Sag287_293.x","Sag473_479.x","Sag482_488","Sag485_491","Sag497_503","Sag500_506","Sag518_524","Sag530_536","Sag542_548","Sag545_551","Sag611_617","Sag617_623","Sag629_635","Sag635_641","Sag641_647","Sag650_656","Sag656_662","Sag767_773","Sag782_788")]
-data_sub_cens <- importQW(data_sub,keep=keepAll,"COD","remark","",0.0000002,"User","kg","Unk","","00335","CODcens")
-siteName <- "GMIACG"
-siteNo <- '040871475'
-siteINFO <-  getNWISSiteInfo(siteNo)
-siteINFO$station.nm <- siteINFO$station_nm
-# name of value column in data_sub_cens object
-investigateResponse <- "CODcens"
-# choose 'normal' or 'lognormal' distribution for data
-transformResponse <- "lognormal"
-
-pathToSave <- paste("/Users/jlthomps/Documents/R/",siteName,sep="")
-
-#################################################################################################
-#Kitchen sink:
-predictVariables <- names(data_sub_cens)[-which(names(data_sub_cens) %in% investigateResponse)]
-predictVariables <- predictVariables[which(predictVariables != "datetime")]
-predictVariables <- predictVariables[which(predictVariables != "decYear")]
-kitchenSink <- createFullFormula(data_sub_cens,investigateResponse)
-
-returnPrelim <- prelimModelDev(data_sub_cens,investigateResponse,kitchenSink,
-                               "BIC", #Other option is "AIC"
-                               transformResponse)
-
-steps <- returnPrelim$steps
-modelResult <- returnPrelim$modelStuff
-modelReturn <- returnPrelim$DT.mod
-
-pdf(paste(pathToSave,"/",investigateResponse,"_plotSteps.pdf",sep=""))
-plotSteps(steps,data_sub_cens,transformResponse)
-dev.off()
-
-pdf(paste(pathToSave,"/",investigateResponse,"_analyzeSteps.pdf",sep=""))
-analyzeSteps(steps, investigateResponse,siteINFO, xCorner = 0.01)
-dev.off()
-
-#################################################################################################
-
-##########################################################
-#Save steps to file:
-fileToSave <- paste(pathToSave,"/",investigateResponse,"_steps.csv",sep="")
-write.table(steps, fileToSave, row.names=FALSE, sep=",") 
-##########################################################
-
-#####################################################
-# Print summary in console:
-#source("/Users/jlthomps/Desktop/git/GLRIBMPs/summaryPrintoutGLRI.R")
-fileName <- paste(pathToSave,"/", investigateResponse,"Summary_2.txt", sep="")
-summaryPrintout(modelReturn, siteINFO, saveOutput=TRUE,fileName)
-#####################################################
-
-dataMergeLK <- dataMerge[which(dataMerge$Site=="LK"),]
-data_sub <- dataMergeLK[,c("remark","COD","decYear","A788","A785","A782","A773","A770","A767","A662","A659","A656","A653","A650","A647","A644","A641","A638","A635","A632","A629","A626","A623","A620","A617","A614","A611","A551","A548","A545","A542","A539","A536","A533","A530","A527","A524","A521","A518","A506","A503","A500","A491","A488","A485","A482","A479","A476","A473","A293","A290","A287","A284","A281","A263","A260","A257","A254","A251","A248","A245","A242","A239","Sag239_242.x","Sag248_254.x","Sag251_257.x","Sag257_263.x","Sag281_287.x","Sag287_293.x","Sag473_479.x","Sag482_488","Sag485_491","Sag497_503","Sag500_506","Sag518_524","Sag530_536","Sag542_548","Sag545_551","Sag611_617","Sag617_623","Sag629_635","Sag635_641","Sag641_647","Sag650_656","Sag656_662","Sag767_773","Sag782_788")]
-data_sub_cens <- importQW(data_sub,keep=keepAll,"COD","remark","",0.0000002,"User","kg","Unk","","00335","CODcens")
-siteName <- "GMIALK"
-siteNo <- '040871475'
-siteINFO <-  getNWISSiteInfo(siteNo)
-siteINFO$station.nm <- siteINFO$station_nm
-# name of value column in data_sub_cens object
-investigateResponse <- "CODcens"
-# choose 'normal' or 'lognormal' distribution for data
-transformResponse <- "lognormal"
-
-pathToSave <- paste("/Users/jlthomps/Documents/R/",siteName,sep="")
-
-#################################################################################################
-#Kitchen sink:
-predictVariables <- names(data_sub_cens)[-which(names(data_sub_cens) %in% investigateResponse)]
-predictVariables <- predictVariables[which(predictVariables != "datetime")]
-predictVariables <- predictVariables[which(predictVariables != "decYear")]
-kitchenSink <- createFullFormula(data_sub_cens,investigateResponse)
-
-returnPrelim <- prelimModelDev(data_sub_cens,investigateResponse,kitchenSink,
-                               "BIC", #Other option is "AIC"
-                               transformResponse)
-
-steps <- returnPrelim$steps
-modelResult <- returnPrelim$modelStuff
-modelReturn <- returnPrelim$DT.mod
-
-pdf(paste(pathToSave,"/",investigateResponse,"_plotSteps.pdf",sep=""))
-plotSteps(steps,data_sub_cens,transformResponse)
-dev.off()
-
-pdf(paste(pathToSave,"/",investigateResponse,"_analyzeSteps.pdf",sep=""))
-analyzeSteps(steps, investigateResponse,siteINFO, xCorner = 0.01)
-dev.off()
-
-#################################################################################################
-
-##########################################################
-#Save steps to file:
-fileToSave <- paste(pathToSave,"/",investigateResponse,"_steps.csv",sep="")
-write.table(steps, fileToSave, row.names=FALSE, sep=",") 
-##########################################################
-
-#####################################################
-# Print summary in console:
-#source("/Users/jlthomps/Desktop/git/GLRIBMPs/summaryPrintoutGLRI.R")
-fileName <- paste(pathToSave,"/", investigateResponse,"Summary_2.txt", sep="")
-summaryPrintout(modelReturn, siteINFO, saveOutput=TRUE,fileName)
-#####################################################
-
-dataMergeOAK <- dataMerge[which(dataMerge$Site=="OAK"),]
-data_sub <- dataMergeOAK[,c("remark","COD","decYear","A788","A785","A782","A773","A770","A767","A662","A659","A656","A653","A650","A647","A644","A641","A638","A635","A632","A629","A626","A623","A620","A617","A614","A611","A551","A548","A545","A542","A539","A536","A533","A530","A527","A524","A521","A518","A506","A503","A500","A491","A488","A485","A482","A479","A476","A473","A293","A290","A287","A284","A281","A263","A260","A257","A254","A251","A248","A245","A242","A239","Sag239_242.x","Sag248_254.x","Sag251_257.x","Sag257_263.x","Sag281_287.x","Sag287_293.x","Sag473_479.x","Sag482_488","Sag485_491","Sag497_503","Sag500_506","Sag518_524","Sag530_536","Sag542_548","Sag545_551","Sag611_617","Sag617_623","Sag629_635","Sag635_641","Sag641_647","Sag650_656","Sag656_662","Sag767_773","Sag782_788")]
-data_sub_cens <- importQW(data_sub,keep=keepAll,"COD","remark","",0.0000002,"User","kg","Unk","","00335","CODcens")
-siteName <- "GMIAOAK"
-siteNo <- '040871475'
-siteINFO <-  getNWISSiteInfo(siteNo)
-siteINFO$station.nm <- siteINFO$station_nm
-# name of value column in data_sub_cens object
-investigateResponse <- "CODcens"
-# choose 'normal' or 'lognormal' distribution for data
-transformResponse <- "lognormal"
-
-pathToSave <- paste("/Users/jlthomps/Documents/R/",siteName,sep="")
-
-#################################################################################################
-#Kitchen sink:
-predictVariables <- names(data_sub_cens)[-which(names(data_sub_cens) %in% investigateResponse)]
-predictVariables <- predictVariables[which(predictVariables != "datetime")]
-predictVariables <- predictVariables[which(predictVariables != "decYear")]
-kitchenSink <- createFullFormula(data_sub_cens,investigateResponse)
-
-returnPrelim <- prelimModelDev(data_sub_cens,investigateResponse,kitchenSink,
-                               "BIC", #Other option is "AIC"
-                               transformResponse)
-
-steps <- returnPrelim$steps
-modelResult <- returnPrelim$modelStuff
-modelReturn <- returnPrelim$DT.mod
-
-pdf(paste(pathToSave,"/",investigateResponse,"_plotSteps.pdf",sep=""))
-plotSteps(steps,data_sub_cens,transformResponse)
-dev.off()
-
-pdf(paste(pathToSave,"/",investigateResponse,"_analyzeSteps.pdf",sep=""))
-analyzeSteps(steps, investigateResponse,siteINFO, xCorner = 0.01)
-dev.off()
-
-#################################################################################################
-
-##########################################################
-#Save steps to file:
-fileToSave <- paste(pathToSave,"/",investigateResponse,"_steps.csv",sep="")
-write.table(steps, fileToSave, row.names=FALSE, sep=",") 
-##########################################################
-
-#####################################################
-# Print summary in console:
-#source("/Users/jlthomps/Desktop/git/GLRIBMPs/summaryPrintoutGLRI.R")
-fileName <- paste(pathToSave,"/", investigateResponse,"Summary_2.txt", sep="")
-summaryPrintout(modelReturn, siteINFO, saveOutput=TRUE,fileName)
-#####################################################
 
