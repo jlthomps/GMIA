@@ -1,11 +1,19 @@
 
-inst_disch <- getRDB1Data("C:/Users/jlthomps/Desktop/git/GMIA/outfalluv.rdb",asDateTime=TRUE)
+doc="C:/Users/jlthomps/Desktop/git/GMIA/outfalluv.rdb"
+inst_disch <- read.delim(doc, header = TRUE, quote = "\"", dec = ".", 
+                         sep = "\t", colClasses = c("character"), fill = TRUE, 
+                         comment.char = "#")
+inst_disch <- inst_disch[-1,]
 #inst_disch <- getRDB1Data("/Users/jlthomps/GMIA/outfalluv.rdb",asDateTime=TRUE)
 
 inst_disch$datetime <- as.POSIXct(inst_disch$DATETIME,format="%Y%m%d%H%M%S")
 inst_disch$DATE <- substr(inst_disch$DATETIME,1,8)
 
-daily_disch <- getRDB1Data("C:/Users/jlthomps/Desktop/git/GMIA/outfalldv.rdb",asDateTime=TRUE)
+doc="C:/Users/jlthomps/Desktop/git/GMIA/outfalldv.rdb"
+daily_disch <- read.delim(doc, header = TRUE, quote = "\"", dec = ".", 
+           sep = "\t", colClasses = c("character"), fill = TRUE, 
+           comment.char = "#")
+daily_disch <- daily_disch[-1,]
 #daily_disch <- getRDB1Data("/Users/jlthomps/GMIA/outfall00060DV.rdb",asDateTime=TRUE)
 
 daily_disch$datetime <- as.POSIXct(daily_disch$DATE,format="%Y%m%d")
@@ -57,3 +65,4 @@ for (i in 1:norep) {
   dfQ_temp <- dfq[beginpt:hydrovol_match_end[i],]
   if (i==1) {dfQLK <- dfQ_temp} else {dfQLK <- rbind(dfQLK,dfQ_temp) }
 }
+
