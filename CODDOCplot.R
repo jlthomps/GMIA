@@ -2,12 +2,13 @@
 setwd("/Users/jlthomps/Desktop/git/GMIA")
 COD2014 <- read.csv(file="COD2014.csv",stringsAsFactors=FALSE)
 COD2014$ProjectID <- paste(COD2014$Site,COD2014$Storm,sep="-")
-DOC2014 <- c("030414.csv","050714.csv","090814.csv","03182014.csv","04242014.csv","20141201b.csv","20141210.csv","lenaker_041214.csv","Lenaker012214.csv","12232013.csv","lenaker121113.csv")
+DOC2014 <- c("030414.csv","090814.csv","04242014.csv","20141201b.csv","20141210.csv","Lenaker012214.csv","20140506.csv","20150112.csv","20150120.csv","20150326.csv")
 FolderName="GMIA_Corsi-Lenaker"
 DfMerge<-COD2014
 DfMergeSamps='ProjectID'
 for (i in 1:length(DOC2014)) {
   FileName=DOC2014[i]
+  cat(paste(i,FileName,'\n',sep=""))
   FilePath <- paste('//Igsarmewwsscu/SCUData/TOC_REPORTS',FolderName,FileName,sep='/')
   
   DOC <- read.csv(FilePath,stringsAsFactors=FALSE)
@@ -29,7 +30,7 @@ for (i in 1:length(DOC2014)) {
   
   AllQA <- sort(c(Blankrows,TwentyCheckrows,OneCheckrows,Unknownrows,Standardrows))
   Df <- DOC[-c(AllQA),]
-  Df[,'MeanConc.'] <- as.numeric (Df[,'MeanConc.'])
+  Df[,'MeanConc.'] <- as.numeric (Df[,'FinalConc'])
   DfNew <- data.frame(SampleName=as.character(),DOCResult=as.numeric()) 
   
   if (length(unique(Df[,'SampleName']))>0) {
@@ -38,7 +39,7 @@ for (i in 1:length(DOC2014)) {
     TempDf <- Df[which(Df$SampleName==SampName),]
     DfNew[,'SampleName'] <- as.character(DfNew[,'SampleName'])
     DfNew[j,'SampleName'] <- SampName
-    DfNew[j,'DOCResult'] <- mean(TempDf[,'MeanConc.'])
+    DfNew[j,'DOCResult'] <- mean(TempDf[,'FinalConc'])
   }
   }
   
@@ -67,15 +68,19 @@ parOriginal <- par(no.readonly = TRUE)
 plot(DfFinal$logDOC,DfFinal$logCOD,pch=DfFinal$Site,type="p",main="COD vs DOC for Runoff Events at GMIA USGS sites, 2013-2014",xlab="log(DOC)",ylab="log(COD)")  
 lmFormula <- "logCOD ~ logDOC"
 lmfit <- do.call("lm", list(lmFormula, data = DfFinal))
+temp <- summary(lmfit)
+rsquare <- round(temp$adj.r.squared,2)
 abline(lmfit, col="red")
-mtext(paste("log(COD) = ",round(coef(lmfit)[1],3)," + ",round(coef(lmfit)[2],3),"log(DOC)",sep=""), side = 1, line = -1.5, cex = 0.7)
+mtext(paste("log(COD) = ",round(coef(lmfit)[1],3)," + ",round(coef(lmfit)[2],3),"log(DOC) R-squared=",rsquare,sep=""), side = 1, line = -1.5, cex = 0.7)
 legend("topleft",c("LK","CG","OAK","OUT"),pch=c(1,2,3,4))
 par(parOriginal)
 plot(DfFinal$DOCResult,DfFinal$COD,pch=DfFinal$Site,type="p",main="COD vs DOC for Runoff Events at GMIA USGS sites, 2013-2014",xlab="DOC",ylab="COD")  
 lmFormula <- "COD ~ DOCResult"
 lmfit <- do.call("lm", list(lmFormula, data = DfFinal))
+temp <- summary(lmfit)
+rsquare <- round(temp$adj.r.squared,2)
 abline(lmfit, col="red")
-mtext(paste("COD = ",round(coef(lmfit)[1],3)," + ",round(coef(lmfit)[2],3),"DOC",sep=""), side = 1, line = -1.5, cex = 0.7)
+mtext(paste("COD = ",round(coef(lmfit)[1],3)," + ",round(coef(lmfit)[2],3),"DOC R-squared=",rsquare,sep=""), side = 1, line = -1.5, cex = 0.7)
 legend("topleft",c("LK","CG","OAK","OUT"),pch=c(1,2,3,4))
 par(parOriginal)
 dev.off()

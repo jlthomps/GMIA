@@ -5,12 +5,31 @@ formatAbsSamplesJT <- function(dateLower,dateUpper,Type,Project){
   dateRangeFiles <- dateRangeFiles[-c(XLfile)]
   dateRangeFiles <- dateRangeFiles[which(dateRangeFiles <= dateUpper)]
   dateRangeFiles <- dateRangeFiles[which(dateRangeFiles >= dateLower)]  
+  dateRangeFiles <- dateRangeFiles[which(dateRangeFiles!='2014')]
+  
+  dateRangeFilesb <- list.files(path='//igsarmewwshg9/HG9Data/AquaLog/AquaLog_Data/2013')
+  dateRangeFilesb <- dateRangeFilesb[which(dateRangeFilesb <= dateUpper)]
+  dateRangeFilesb <- dateRangeFilesb[which(dateRangeFilesb >= dateLower)]  
+  dateRangeFilesb <- paste('2013/',dateRangeFilesb,sep="")
+  
+  dateRangeFilesc <- list.files(path='//igsarmewwshg9/HG9Data/AquaLog/AquaLog_Data/2014')
+  dateRangeFilesc <- dateRangeFilesc[which(dateRangeFilesc <= dateUpper)]
+  dateRangeFilesc <- dateRangeFilesc[which(dateRangeFilesc >= dateLower)]
+  dateRangeFilesc <- dateRangeFilesc[which(nchar(dateRangeFilesc)<10)]
+  dateRangeFilesc <- paste('2014/',dateRangeFilesc,sep="")
+  
+  dateRangeFiles <- append(dateRangeFiles,dateRangeFilesb)
+  dateRangeFiles <- append(dateRangeFiles,dateRangeFilesc)
+  dateRangeFiles <- dateRangeFiles[-which(dateRangeFiles=='20150223')]
+  dateRangeFiles <- dateRangeFiles[-which(dateRangeFiles=='2014/20141219')]
+  
   
   AbsList <- list()
   
   for(i in 1:length(dateRangeFiles)){
     
     fileName <- paste('//igsarmewwshg9/HG9Data/AquaLog/AquaLog_Data',dateRangeFiles[i],sep='/')
+    cat(paste(i,fileName,'\n',sep="\n"))
     
     setwd(fileName)
     

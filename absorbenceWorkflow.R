@@ -9,7 +9,7 @@
 # testnames <- gsub("USGS","Group",testnames)
 # colnames(FinalAbsDf) <- testnames
 # #wavs <- c(251,254,257)
-# testnames <- testnames[1:115]
+# testnames <- testnames[1:274]
 # test <- data.frame(testnames,stringsAsFactors=FALSE)
 # colnames(test) <- "GRnumber"
 # wavs <- unique(FinalAbsDf$Wavelength)
@@ -30,7 +30,7 @@ load("testAbs.RData")
 load("FinalAbsDf.RData")
 
 temp <- testAbs$GRnumber
-temp2 <- substr(testAbs$GRnumber,unlist(gregexpr(pattern="_2",temp))+1,unlist(gregexpr(pattern="_2",temp))+8)
+temp2 <- substr(testAbs$GRnumber,unlist(gregexpr(pattern="_2",temp))+1,unlist(gregexpr(pattern="_2",temp))+13)
 temp3 <- temp
 for (i in 1:length(temp)) {
   a <- temp[i]
@@ -38,7 +38,7 @@ for (i in 1:length(temp)) {
   temp3[i] <- b[1]
 }
 
-testAbs$date <- temp2
+testAbs$date <- substr(temp2,nchar(temp2)-7,nchar(temp2))
 testAbs$ProjectID <- temp3
 testAbs$datetime <- strptime(testAbs$date,format="%Y%m%d")
 testAbsGMIA <- testAbs[substr(testAbs$ProjectID,1,2) %in% c("OU","Ou","CG","LK","US","OAK"),]
@@ -66,8 +66,10 @@ testAbsLK <- testAbsLK[which(paste(testAbsLK$ProjectID,testAbsLK$date,sep="")!="
 testAbsWorking <- rbind(testAbsOUT,testAbsCG)
 testAbsWorking <- rbind(testAbsWorking,testAbsLK)
 testAbsWorking <- rbind(testAbsWorking,testAbsOAK)
+testAbsWorking <- testAbsWorking[-which(substr(testAbsWorking$GRnumber,1,1)=='Q'),]
 
 grnumsIn <- unique(testAbsWorking$GRnumber)
+grnumsIn <- grnumsIn[-which(substr(grnumsIn,1,1)=='Q')]
 grnumsIn <- c(grnumsIn,"Wavelength")
 FinalAbsDf <- FinalAbsDf[,grnumsIn]
 finalcols <- colnames(FinalAbsDf)
@@ -87,7 +89,8 @@ FinalAbsDf$minAbs <- do.call(pmin,c(FinalAbsDf[,finalcolsALL],na.rm=TRUE))
 FinalAbsDf[is.na(FinalAbsDf)] <- min(FinalAbsDf$minAbs)
 
 pathToSave <- "/Users/jlthomps/Documents/R/GMIA"
-absDf <- FinalAbsDf[,c(35:40)]
+colsKeep <- c('Wavelength','meanAbs','meanAbsCG','meanAbsOUT','meanAbsOA','meanAbsLK')
+absDf <- FinalAbsDf[,colsKeep]
 WaveCol <- "Wavelength"
 titleSize <- 1.1
 mainTitle <- "GMIA Absorbance Plot"
@@ -102,8 +105,8 @@ points(absDf[,WaveCol],absDf[,6],type="l",col="pink")
 legend("topright",c("All","OUT","CG","LK","OAK"),col=c("blue","green","red","black","pink"),lty=c(1,1,1,1,1))
 dev.off()
 
-absDf <- FinalAbsDf[,c(1:35)]
-nsteps <- 34
+absDf <- FinalAbsDf[,c(1:105)]
+nsteps <- 104
 pdf(paste(pathToSave,"/","PlotAbsSamples.pdf",sep=""))
 for (i in 1:nsteps) {  
   par(tcl=0.3)
@@ -114,25 +117,37 @@ dev.off()
 pdf(paste(pathToSave,"/","PlotAbsSamplesSubset.pdf",sep=""))
 parOriginal <- par(no.readonly = TRUE)
 
-sample1 <- "OUT-S105_Group002GMIA0006_20131223"
+sample1 <- "OUT-S105_Group002GMIA0006_2013/20131223"
 plot(absDf[,WaveCol],absDf[,sample1],type="l",lty=1,col="blue",xlab="Wavelength (nm)",ylab="Absorbance coefficient",ylim=c(0,0.05),main="Absorbance plot for Outfall Storm 105")
 legend("topright",c("Acetate 1430","Ethylene Glycol <10","Propylene Glycol 1100","Formate <25"))
 par(parOriginal)
-sample1 <- "Out-S106_Group001GMIA0008_20140121"
+sample1 <- "Out-S106_Group001GMIA0008_2014/20140121"
 plot(absDf[,WaveCol],absDf[,sample1],type="l",lty=1,col="blue",xlab="Wavelength (nm)",ylab="Absorbance coefficient",ylim=c(0,0.05),main="Absorbance plot for Outfall Storm 106")
 legend("topright",c("Acetate 490","Ethylene Glycol <10","Propylene Glycol 330","Formate <2.5"))
 par(parOriginal)
-sample1 <- "OUT-S107_Group002GMIA0003_20140227"
+sample1 <- "OUT-S107_Group002GMIA0003_2014/20140227"
 plot(absDf[,WaveCol],absDf[,sample1],type="l",lty=1,col="blue",xlab="Wavelength (nm)",ylab="Absorbance coefficient",ylim=c(0,0.05),main="Absorbance plot for Outfall Storm 107")
 legend("topright",c("Acetate 461","Ethylene Glycol <10","Propylene Glycol 340","Formate <2.5"))
 par(parOriginal)
-sample1 <- "CG-S106_Group001GMIA0006_20140121"
+sample1 <- "CG-S106_Group001GMIA0006_2014/20140121"
 plot(absDf[,WaveCol],absDf[,sample1],type="l",lty=1,col="blue",xlab="Wavelength (nm)",ylab="Absorbance coefficient",ylim=c(0,0.05),main="Absorbance plot for Cargo Storm 106")
 legend("topright",c("Acetate 622","Ethylene Glycol 37","Propylene Glycol 2500","Formate <2.5"))
 par(parOriginal)
-sample1 <- "CG-S107_Group002GMIA0008_20140227"
+sample1 <- "CG-S107_Group002GMIA0008_2014/20140227"
 plot(absDf[,WaveCol],absDf[,sample1],type="l",lty=1,col="blue",xlab="Wavelength (nm)",ylab="Absorbance coefficient",ylim=c(0,0.05),main="Absorbance plot for Cargo Storm 107")
 legend("topright",c("Acetate 125","Ethylene Glycol 32","Propylene Glycol 1500","Formate 4.66"))
+par(parOriginal)
+sample1 <- "CG-S111_Group002GMIA0008_2014/20141201"
+plot(absDf[,WaveCol],absDf[,sample1],type="l",lty=1,col="blue",xlab="Wavelength (nm)",ylab="Absorbance coefficient",ylim=c(0,0.05),main="Absorbance plot for Cargo Storm 111")
+legend("topright",c("Acetate 864","Ethylene Glycol 100","Propylene Glycol 1400","Formate <2.5"))
+par(parOriginal)
+sample1 <- "OUT-S114A_Group002GMIA0001_20150305"
+plot(absDf[,WaveCol],absDf[,sample1],type="l",lty=1,col="blue",xlab="Wavelength (nm)",ylab="Absorbance coefficient",ylim=c(0,0.05),main="Absorbance plot for Outfall Storm 114")
+legend("topright",c("Acetate 136","Ethylene Glycol 23","Propylene Glycol 77","Formate <2.5"))
+par(parOriginal)
+sample1 <- "OUT-S113_Group002GMIA0005_20150106"
+plot(absDf[,WaveCol],absDf[,sample1],type="l",lty=1,col="blue",xlab="Wavelength (nm)",ylab="Absorbance coefficient",ylim=c(0,0.05),main="Absorbance plot for Outfall Storm 113")
+legend("topright",c("Acetate 179","Ethylene Glycol <10","Propylene Glycol 1400","Formate <2.5"))
 par(parOriginal)
 dev.off()
 
@@ -143,6 +158,7 @@ wavelength <- 491
 rangeReg <- c(419,602)
 rangeGap <- c(461,521)
 colsAbs <- unique(testAbsWorking$GRnumber)
+colsAbs <- colsAbs[-which(substr(colsAbs,1,1)=='Q')]
 colsAbs <- c(colsAbs,"Wavelength")
 dataAbs <- FinalAbsDf[,colsAbs]
 waveCol <- "Wavelength"
