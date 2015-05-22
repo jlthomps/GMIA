@@ -69,7 +69,7 @@ testAbsWorking <- rbind(testAbsWorking,testAbsOAK)
 testAbsWorking <- testAbsWorking[-which(substr(testAbsWorking$GRnumber,1,1)=='Q'),]
 
 grnumsIn <- unique(testAbsWorking$GRnumber)
-grnumsIn <- grnumsIn[-which(substr(grnumsIn,1,1)=='Q')]
+#grnumsIn <- grnumsIn[-which(substr(grnumsIn,1,1)=='Q')]
 grnumsIn <- c(grnumsIn,"Wavelength")
 FinalAbsDf <- FinalAbsDf[,grnumsIn]
 finalcols <- colnames(FinalAbsDf)
@@ -158,7 +158,7 @@ wavelength <- 491
 rangeReg <- c(419,602)
 rangeGap <- c(461,521)
 colsAbs <- unique(testAbsWorking$GRnumber)
-colsAbs <- colsAbs[-which(substr(colsAbs,1,1)=='Q')]
+#colsAbs <- colsAbs[-which(substr(colsAbs,1,1)=='Q')]
 colsAbs <- c(colsAbs,"Wavelength")
 dataAbs <- FinalAbsDf[,colsAbs]
 waveCol <- "Wavelength"
@@ -177,14 +177,23 @@ cols2 <- cols2[1:158]
 cols2 <- c(cols2,"Resids490","Resids630")
 colnames(testdfOpt2) <- cols2
 
+wavelength <- 422
+rangeReg <- c(377,497)
+rangeGap <- c(404,452)
+dataSummary <- testdfOpt2
+testdfOpt3 <- getExpResidJT(wavelength,rangeReg,rangeGap,dataAbs,waveCol,colSubsetString,dataSummary,grnum)
+cols2 <- colnames(testdfOpt2)
+cols2 <- c(cols2,"Resids422")
+colnames(testdfOpt3) <- cols2
+
 sag <- read.csv("SagVals.csv",stringsAsFactors=FALSE)
 colSubsetString <- "Gr"
-dataSummary <- testdfOpt2
+dataSummary <- testdfOpt3
 grnum <- "GRnumber"
 source("/Users/jlthomps/Desktop/git/GMIA/getSagJT.R")
 GMIASag <- getSagJT(FinalAbsDf,WaveCol,sag,colSubsetString,dataSummary,"GRnumber")
 
-library(dataRetrieval)
+#library(dataRetrieval)
 #setwd("C:/Users/jlthomps/GMIA")
 COD2014 <- read.csv(file="COD2014.csv",stringsAsFactors=FALSE)
 COD2014$ProjectID <- paste(COD2014$Site,COD2014$Storm,sep="-")
@@ -224,7 +233,7 @@ pathToSave <- paste("/Users/jlthomps/Documents/R/",siteName,sep="")
 predictVariables <- names(data_sub_cens)[-which(names(data_sub_cens) %in% investigateResponse)]
 predictVariables <- predictVariables[which(predictVariables != "datetime")]
 predictVariables <- predictVariables[which(predictVariables != "decYear")]
-kitchenSink <- createFullFormula(data_sub_cens[,2:173],investigateResponse)
+kitchenSink <- createFullFormula(data_sub_cens[,2:174],investigateResponse)
 
 returnPrelim <- prelimModelDev(data_sub_cens,investigateResponse,kitchenSink,
                                "BIC", #Other option is "AIC"
