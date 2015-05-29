@@ -32,10 +32,12 @@ load("FinalAbsDf.RData")
 temp <- testAbs$GRnumber
 temp2 <- substr(testAbs$GRnumber,unlist(gregexpr(pattern="_2",temp))+1,unlist(gregexpr(pattern="_2",temp))+13)
 temp3 <- temp
+c <- grep("redo",temp)
 for (i in 1:length(temp)) {
   a <- temp[i]
   b <- unlist(strsplit(a,"_"))
   temp3[i] <- b[1]
+  if (i %in% c) {temp3[i] <- substr(temp3[i],1,nchar(temp3[i])-4)}
 }
 
 testAbs$date <- substr(temp2,nchar(temp2)-7,nchar(temp2))
@@ -258,6 +260,30 @@ dev.off()
 fileToSave <- paste(pathToSave,"/",investigateResponse,"_steps.csv",sep="")
 write.table(steps, fileToSave, row.names=FALSE, sep=",") 
 ##########################################################
+
+#####################################################
+# Print summary in console:
+#source("/Users/jlthomps/Desktop/git/GLRIBMPs/summaryPrintoutGLRI.R")
+fileName <- paste(pathToSave,"/", investigateResponse,"Summary.txt", sep="")
+summaryPrintout(modelReturn, siteINFO, saveOutput=TRUE,fileName)
+#####################################################
+
+##########################################################
+# Generate a csv file to customize model parameters (can do without running kitchen sink):
+choices <- generateParamChoices(predictVariables,modelReturn,pathToSave,save=TRUE)
+##########################################################
+
+##########################################################
+# Import model parameters from csv file if desired:
+pathToParam <- paste(pathToSave,"/",investigateResponse,"ModelParams.csv",sep="")
+choicesNew <- read.csv(pathToParam)
+newFormula <-createFormulaFromDF(choicesNew)
+##########################################################
+
+##########################################################
+# Or, don't do the stepwise regression, just get the model coefficients using csv file:
+modelReturn <- censReg(paste(investigateResponse," ~ ", newFormula, sep=""), dist=transformResponse, data=data_sub_cens)
+#####################################################
 
 #####################################################
 # Print summary in console:
