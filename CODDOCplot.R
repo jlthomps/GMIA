@@ -2,7 +2,7 @@
 setwd("/Users/jlthomps/Desktop/git/GMIA")
 COD2014 <- read.csv(file="COD2014.csv",stringsAsFactors=FALSE)
 COD2014$ProjectID <- paste(COD2014$Site,COD2014$Storm,sep="-")
-DOC2014 <- c("030414.csv","090814.csv","04242014.csv","20141201b.csv","20141210.csv","Lenaker012214.csv","20140506.csv","20150112.csv","20150120.csv","20150326.csv")
+DOC2014 <- c("030414.csv","090814.csv","03182014.csv","04242014.csv","20141201b.csv","20141210.csv","Lenaker012214.csv","lenaker_041214.csv","20140506.csv","20150112.csv","20150120.csv","20150326.csv","12232013.csv","lenaker121113.csv")
 FolderName="GMIA_Corsi-Lenaker"
 DfMerge<-COD2014
 DfMergeSamps='ProjectID'
