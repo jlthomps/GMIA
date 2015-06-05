@@ -1,3 +1,5 @@
+#changed dfabs to dataAbs in line 18
+#
 getExpResidJT <- function (wavelength, rangeReg, rangeGap, dataAbs, waveCol, colSubsetString, 
           dataSummary, grnum) 
 {

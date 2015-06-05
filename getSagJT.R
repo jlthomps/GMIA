@@ -1,3 +1,5 @@
+#only change is addition of stringsAsFactors=FALSE to line 21
+#
 getSagJT <- function (dataAbs, waveCol, sag, colSubsetString, dataSummary, 
           grnum) {
   df <- dataAbs[, grep(colSubsetString, names(dataAbs))]

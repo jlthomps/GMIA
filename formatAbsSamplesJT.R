@@ -1,3 +1,7 @@
+#added lines 8 to 24 to deal with source file issues and directories
+#added line 32 in testing
+#added if in line 101 to exclude entries with na dilution
+#changed filesNeeded into to include project information in output
 formatAbsSamplesJT <- function(dateLower,dateUpper,Type,Project){
   
   dateRangeFiles <- list.files(path='//igsarmewwshg9/HG9Data/AquaLog/AquaLog_Data')
