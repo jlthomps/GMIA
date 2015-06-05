@@ -1,9 +1,80 @@
 Airport 
 
-6/9/14
-made a few changes to data merging
-figured out correct way to use censored data and reporting limits with censReg
-looking at residuals, breakpoints are not obvious. this is the next step
+5/2015
+Fixed data for DOC vs COD regression - I was using some preliminary data, fixed to only final data
+	for 090814, there's only MeanConc (no FinalConc). Use this?
+	for 03182014, no second tab on xlsx file, so skipped
+	for 20141210/20141210b, which to use? replicates?
+	for Lenaker012214, no second tab on xlsx file, so skipped
+	for lenaker_041214, only MeanConc (no FinalConc). Use this?
+	for 12232013, no second tab on xlsx file, so skipped
+	for lenaker)121113, no second tab, so skipped
+Missing DOC for CG S109, S112, S116; US S104, S105, S105G, S108, S108G, S112, S112G, S115, S116, S116A, S116B, S116C, W101, W104; 
+LK S104, S104G, S105, S105G, S108, S108G, S112, S112G, S114, S115, S115A, S115B, S115C, S116, S116A, S116B, W101, W104; 
+OUT S104, S104G, S105, S105G, S106, S108, S108G, S112, S112G, S114, S114A, S114B, S114C, S114D, S114E, S114F, S114G, S114H, S114J, S114K, S115, S115A, S115BD, S115E, S115FG, S115HJ, S115KL, S115M, S115NO, S115PQ, S115RS, S115T, S115UV, S116, S116A, S116B, S116C, W101, W104; 
+OAK S104, S105, S106, S107, S108, S112, S115, S116, W101, W104
+
+Added more residuals to dataset for regression. Re-running - double-check all the data omitted. Then run summary for best model. 
+Send new results with included data/Sags and resids. 
+Check on HG9 for deicer runs
+
+
+1/2015
+Pulled in DOC using HydroOpt
+Used getExpResid function to look at residuals of regressions for spectra ranges
+Fixed sign issues w/ regression equations on plots and summary
+Added sample name to individual sample absorbence plots
+
+Current state:
+Using script absorbenceWorkflow.R
+Script pulls in and formats absorbence data, removes duplicates when present, replaces negative values with minimum value above zero. 
+Creates absorbence plots (absorbence vs frequency) for each sample as well as one of means. Calculates a couple residuals as well as reads 
+in a file of spectral slopes. Then uses GSqwsr to find regression on COD for all possible variables.
+Optical can be measured with a real-time field instrument (Steve is looking into manufacturers/instruments), and looks promising to be used 
+for prediction of COD. DOC could be used, but doesn't look like as good of a predictor, problems with influence from natural sources of COD 
+at low levels. Will also look into using the absorbence to predict acetate and glycol, but probably COD regression will be better. Tried 
+adding water temperature, but it removed a lot of samples. Maybe from internal NWIS rather than web? Also didn't show up much as important.
+
+* look at suspended solids to explain higher COD than predicted by DOC
+* try adding A254 to COD vs DOC regression to see if helps (proxy for organic environmental carbon)
+* switch away from GSqwsr stepwise regression to a process that tries all possible combos (up to a specified number of variables)
+* w/in GSqwsr, seems like it would be useful to add a max number of variables, or set a min % change in AIC/BIC to continue
+* take a look at my fixes and additions to graphs and outputs - should any be merged back into GSqwsr?
+* refine COD vs DOC graph and add regression to it
+* Future - may look at using categorical variable(s) in regression to represent site location, season, snowfall, etc
+* Future - incorporate DOC to help tease out absorbence due to factors other than deicer
+* Future - Pete will run absorbence on deicer samples we have so we can see exactly where they come out
+* Future - more samples will be taken in between storms and tested for absorbence
+* Future - data analysis and manuscript prep for this work. We (Steve, Pete and I) can begin the manuscript any time
+* Future - work with Steve on his original dye study manuscript
+
+
+12/2014
+Current regression for all GMIA (OUT,CG,LK,OAK) sites with absorbence looks promising
+Removed absorbence greater than 700 because absorbence plots of individual samples show no activity
+Removed narrow spectral slopes, especially in the lower spectra, because individual samples absorbence plots don't show patterns there
+Individual sample absorbence plots show peaks in the ~500 and ~600 areas
+Added R2 to graphs and summary
+Added shape to plot points on plotSteps graph to signify site (OUT,CG,LK,OAK)
+
+* Fix equations written to plots and summary to include correct sign (+ or -). Value?
+* Add sample name to individual sample absorbence plots
+* Look at function in HydroOpt package to pull in DOC
+* Send Sam changes I made to his finalAbs function 
+* Send Steve note about error in getSag.R in HydroOpt - line 11 dfAbs should be dataAbs
+* Put together graph of COD vs DOC and a regression to help Pete compute dilutions needed for running the deicers
+* Seeing the strength of the seasonal term, try adding in water temperature (available for OUT, CG and LK). Use dataRetrieval to get the unit values, then use TSStormStats from Hydrotools to get mean water temp for the sampling periods using the beginning and ending dates and times of the samples
+* Try using getExpResid function to focuses on a specified range of absorbance data, builds a regression with data on the left and right of that range, then computes the residual in the middle at a specified location. For example, consider page 8 of the graphs. The range from about 605 to 660 has a peak that we would focus on. We would build a regression based on data surrounding it, so from wavelengths 560-610 combined with 670 to 700. Then compute residuals from that regression at the wavelength where the peak is (~630 for page 8). The function does all of this and spits out another column of data.
+* Write up notes on decisions, process, comments so script will be ready to go in May with this winter's data
+* Future - may look at using categorical variable(s) in regression to represent site location, season, snowfall, etc
+* Future - incorporate DOC to help tease out absorbence due to factors other than deicer
+* Future - Pete will run absorbence on deicer samples we have so we can see exactly where they come out
+* Future - more samples will be taken in between storms and tested for absorbence
+* Future - data analysis and manuscript prep for this work. We (Steve, Pete and I) can begin the manuscript any time
+* Future - work with Steve on his original dye study manuscript
+
+6/2014
+all merged and run. doesn't look all that promising. Steve wants to check next on possible relationship of optical/absorbence data to predicting COD
 
 
 5/15/14
@@ -17,21 +88,7 @@ for EP+PG - need to check on how censored is working if one value is censored an
 for EG+PG from Steve:
  It would make sense to compute loads for both first. Use a general rule to follow when the values are censored (need to choose and estimate rather than assigning a censored load). Then add the loads
 I have an idea for estimating....Develop a regression between COD and EG and between COD and PG. When values of PG or EG are censored, use COD to estimate them.
-kgGlycol as forcing factor - check w/ galGlycol to make sure it's just a conversion (not total gallons product)
-Plots of residuals:
-pdf of several plots, with different color points for pre and post, bunch of graphs setting different marks for pre/post
-boxplot of residuals pre and post
-wilcox and/or t-test between final pre and post residuals
-early june present to dnr
-pulling bod, cod, eg, pg from qwdata - storm id is in scmfl field
-daily snow - take snow depth differences from daily summary weather data and merge into hourly
-Cargo and St. Lukes - figure out travel times and then run same regressions for those
-final comparison - amount measured at Outfall and Cargo vs how much makes it to St. Lukes
-Jessica
 
-The management happened over a period of time, beginning probably in 1998 or 1999. They increased it each year and still are working on improvements. I think the best approach might be to loop through different years as the starting point from 1998 through 2006 or so.
-
-Another option might be to just compute the residuals of the regression, graph them as a time series, and run a smoothing curve through it to see if there is a trend. Use the "lowess" function as a start for the smoothing curve and play around with the f value varying it from about 0.1 to about 0.5 to see how it reacts.
 
 
 
@@ -82,13 +139,6 @@ Data:
 //projects/nonpoint/gmia/WQ2013/ for data pulled from NWIS QWData and calculated loads
 http://w1.weather.gov/data/obhistory/KMKE.html
 http://www.crh.noaa.gov/data/obhistory/KMKE.html
-http://www.ncdc.noaa.gov/cdo-web/datasets
-* GHCN-daily csv 343030.csv (doc GHCN_documentation)
-* quality controlled local climatological data - only available back to 2005
-* GSOD - global summary of day global_daily_summary_CDO2400066445620.txt (doc GSOD_DESC)
-* Global Hourly - hourly_global (doc ish-format-document.pdf)
-* normals - not useful
-* hourly precip - hourly_precip_170692.csv (doc PRECIP_HLY_documentation.doc)
 
 COD pcode 00335
 BOD pcode 00310
