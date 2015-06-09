@@ -24,8 +24,8 @@ formatAbsSamplesJT <- function(dateLower,dateUpper,Type,Project){
   
   dateRangeFiles <- append(dateRangeFiles,dateRangeFilesb)
   dateRangeFiles <- append(dateRangeFiles,dateRangeFilesc)
-  dateRangeFiles <- dateRangeFiles[-which(dateRangeFiles=='20150223')]
-  dateRangeFiles <- dateRangeFiles[-which(dateRangeFiles=='2014/20141219')]
+  #dateRangeFiles <- dateRangeFiles[-which(dateRangeFiles=='20150223')]
+  #dateRangeFiles <- dateRangeFiles[-which(dateRangeFiles=='2014/20141219')]
   
   
   AbsList <- list()
