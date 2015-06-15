@@ -1,5 +1,18 @@
 Airport 
 
+6/2015
+Prepping for Steve's mtg w/ GMIA and DNR in early July, as well as eventual publication
+Got all questions on DOC vs COD data answered and fixed by Pete
+For the paper - similar to pavement deicer paper
+Idea is that this regression can be used to real-time predict COD using optical instrument.
+Results will use deicers/dye graphs (Pellerin) to show which dye is in which deicer
+How transferable are results? Not sure b/c of background organic matter diffs, seasonality diffs
+Will see if can regress w/o seasonality, then may be more transferable. Maybe get data from other airports to test transferability
+Cargo is basically a storm sewer (rather than a stream), so background only from rain/snow. May be more transferable to like sites.
+Looking at deicer graphs, early slope shows up strongly in regression, as well as large 470ish bump, which may be a combo of one a bit earlyer (~425) and one a bit later (~490)
+Type I deicer - more viscous, put on the planes
+Type IV anti-icer - to keep ice from reforming on plan and tarmac
+
 5/2015
 Fixed data for DOC vs COD regression - I was using some preliminary data, fixed to only final data
 	for 090814, there's only MeanConc (no FinalConc). Use this?
