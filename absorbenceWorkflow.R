@@ -27,7 +27,14 @@
 
 setwd("/Users/jlthomps/Desktop/git/GMIA")
 load("testAbs.RData")
-load("FinalAbsDf.RData")
+FinalAbsDf <- read.table("FinalAbsDf.csv",stringsAsFactors=FALSE,sep=",",header=TRUE)
+#load("FinalAbsDf.RData")
+FinalAbsDf <- FinalAbsDf[,-1]
+tempname <- colnames(FinalAbsDf)
+tempname <- gsub("2013.","2013/",tempname,fixed=TRUE)
+tempname <- gsub("2014.","2014/",tempname,fixed=TRUE)
+tempname <- gsub(".","-",tempname,fixed=TRUE)
+colnames(FinalAbsDf) <- tempname
 
 temp <- testAbs$GRnumber
 temp2 <- substr(testAbs$GRnumber,unlist(gregexpr(pattern="_2",temp))+1,unlist(gregexpr(pattern="_2",temp))+13)
@@ -43,7 +50,7 @@ for (i in 1:length(temp)) {
 testAbs$date <- substr(temp2,nchar(temp2)-7,nchar(temp2))
 testAbs$ProjectID <- temp3
 testAbs$datetime <- strptime(testAbs$date,format="%Y%m%d")
-testAbsGMIA <- testAbs[substr(testAbs$ProjectID,1,2) %in% c("OU","Ou","CG","LK","US","OAK"),]
+testAbsGMIA <- testAbs[substr(testAbs$ProjectID,1,2) %in% c("OU","Ou","CG","LK","US","OA"),]
 
 testAbsOAK <- testAbs[grep("OAK-",testAbs$ProjectID),]
 testAbsOAK <- testAbsOAK[which(paste(testAbsOAK$ProjectID,testAbsOAK$date,sep="")!="OAK-S10720140225"),]
@@ -193,7 +200,7 @@ colSubsetString <- "Gr"
 dataSummary <- testdfOpt3
 grnum <- "GRnumber"
 source("/Users/jlthomps/Desktop/git/GMIA/getSagJT.R")
-GMIASag <- getSagJT(FinalAbsDf,WaveCol,sag,colSubsetString,dataSummary,"GRnumber")
+GMIASag <- getSagJT(FinalAbsDf,waveCol,sag,colSubsetString,dataSummary,"GRnumber")
 
 #library(dataRetrieval)
 #setwd("C:/Users/jlthomps/GMIA")
@@ -214,7 +221,7 @@ keepCols <- colnames(dataMerge)
 keepCols <- keepCols[-which(keepCols %in% c("ProjectID","Storm","Volume","GRnumber","date","datetime","startDate","endDate"))]
 data_sub <- dataMerge[,keepCols]
 #data_sub <- dataMerge[,c("remark","COD","decYear","A788","A731","A722","A719","A716","A713","A587","A506","A503","A500","A428","A242","A239")]
-data_sub$Site <- ifelse(data_sub$Site=='CG','2',ifelse(data_sub$Site=='LK','1',ifelse(data_sub$Site=='OAK','3','4')))
+data_sub$Site <- ifelse(data_sub$Site=='CG',"#009E73",ifelse(data_sub$Site=='LK',"#E69F00",ifelse(data_sub$Site=='OAK',"#0072B2","#CC79A7")))
 
 keepAll <- colnames(data_sub)
 keepAll <- keepAll[-which(keepAll %in% c("remark","COD"))]
@@ -222,7 +229,7 @@ data_sub_cens <- importQW(data_sub,keep=keepAll,"COD","remark","",0.0000002,"Use
 siteName <- "GMIA"
 siteNo <- '040871475'
 siteINFO <-  readNWISsite(siteNo)
-siteINFO$station.nm <- siteINFO$station_nm
+siteINFO$station.nm <- "General Mitchell Airport sites @ Milwaukee WI"
 # name of value column in data_sub_cens object
 investigateResponse <- "CODcens"
 # choose 'normal' or 'lognormal' distribution for data
@@ -235,7 +242,7 @@ pathToSave <- paste("/Users/jlthomps/Documents/R/",siteName,sep="")
 predictVariables <- names(data_sub_cens)[-which(names(data_sub_cens) %in% investigateResponse)]
 predictVariables <- predictVariables[which(predictVariables != "datetime")]
 predictVariables <- predictVariables[which(predictVariables != "decYear")]
-kitchenSink <- createFullFormula(data_sub_cens[,2:174],investigateResponse)
+kitchenSink <- createFullFormula(data_sub_cens[,-1],investigateResponse)
 
 returnPrelim <- prelimModelDev(data_sub_cens,investigateResponse,kitchenSink,
                                "BIC", #Other option is "AIC"
@@ -265,6 +272,91 @@ write.table(steps, fileToSave, row.names=FALSE, sep=",")
 # Print summary in console:
 #source("/Users/jlthomps/Desktop/git/GLRIBMPs/summaryPrintoutGLRI.R")
 fileName <- paste(pathToSave,"/", investigateResponse,"Summary.txt", sep="")
+summaryPrintout(modelReturn, siteINFO, saveOutput=TRUE,fileName)
+#####################################################
+
+##########################################################
+# Generate a csv file to customize model parameters (can do without running kitchen sink):
+choices <- generateParamChoices(predictVariables,modelReturn,pathToSave,save=TRUE)
+##########################################################
+
+##########################################################
+# Import model parameters from csv file if desired:
+pathToParam <- paste(pathToSave,"/",investigateResponse,"ModelParams.csv",sep="")
+choicesNew <- read.csv(pathToParam)
+newFormula <-createFormulaFromDF(choicesNew)
+##########################################################
+
+##########################################################
+# Or, don't do the stepwise regression, just get the model coefficients using csv file:
+modelReturn <- censReg(paste(investigateResponse," ~ ", newFormula, sep=""), dist=transformResponse, data=data_sub_cens)
+#####################################################
+
+#####################################################
+# Print summary in console:
+#source("/Users/jlthomps/Desktop/git/GLRIBMPs/summaryPrintoutGLRI.R")
+fileName <- paste(pathToSave,"/", investigateResponse,"Summary_2.txt", sep="")
+summaryPrintout(modelReturn, siteINFO, saveOutput=TRUE,fileName)
+#####################################################
+
+##regression with no seasonality
+dataMerge <- merge(COD2014,GMIASag,by="ProjectID")
+dataMerge <- dataMerge[which(!is.na(dataMerge$COD)),]
+dataMerge$remark <- ""
+keepCols <- colnames(dataMerge)
+keepCols <- keepCols[-which(keepCols %in% c("ProjectID","Storm","Volume","GRnumber","date","datetime","startDate","endDate"))]
+data_sub <- dataMerge[,keepCols]
+data_sub$Site <- ifelse(data_sub$Site=='CG',"#009E73",ifelse(data_sub$Site=='LK',"#E69F00",ifelse(data_sub$Site=='OAK',"#0072B2","#CC79A7")))
+
+keepAll <- colnames(data_sub)
+keepAll <- keepAll[-which(keepAll %in% c("remark","COD"))]
+data_sub_cens <- importQW(data_sub,keep=keepAll,"COD","remark","",0.0000002,"User","kg","Unk","","00335","CODcens")
+siteName <- "GMIA"
+siteNo <- '040871475'
+siteINFO <-  readNWISsite(siteNo)
+siteINFO$station.nm <- "General Mitchell Airport sites @ Milwaukee WI"
+# name of value column in data_sub_cens object
+investigateResponse <- "CODcens"
+# choose 'normal' or 'lognormal' distribution for data
+transformResponse <- "lognormal"
+
+pathToSave <- paste("/Users/jlthomps/Documents/R/",siteName,sep="")
+
+#################################################################################################
+#Kitchen sink:
+predictVariables <- names(data_sub_cens)[-which(names(data_sub_cens) %in% investigateResponse)]
+predictVariables <- predictVariables[which(predictVariables != "datetime")]
+predictVariables <- predictVariables[which(predictVariables != "decYear")]
+kitchenSink <- createFullFormula(data_sub_cens[,-1],investigateResponse)
+
+returnPrelim <- prelimModelDev(data_sub_cens,investigateResponse,kitchenSink,
+                               "BIC", #Other option is "AIC"
+                               transformResponse)
+
+steps <- returnPrelim$steps
+modelResult <- returnPrelim$modelStuff
+modelReturn <- returnPrelim$DT.mod
+source("/Users/jlthomps/Desktop/git/GMIA/plotStepsGMIA.R")
+pdf(paste(pathToSave,"/",investigateResponse,"_plotStepsNoSeason.pdf",sep=""))
+plotStepsGMIA(steps,data_sub_cens,transformResponse)
+dev.off()
+
+pdf(paste(pathToSave,"/",investigateResponse,"_analyzeStepsNoSeason.pdf",sep=""))
+analyzeSteps(steps, investigateResponse,siteINFO, xCorner = 0.01)
+dev.off()
+
+#################################################################################################
+
+##########################################################
+#Save steps to file:
+fileToSave <- paste(pathToSave,"/",investigateResponse,"_stepsNoSeason.csv",sep="")
+write.table(steps, fileToSave, row.names=FALSE, sep=",") 
+##########################################################
+
+#####################################################
+# Print summary in console:
+#source("/Users/jlthomps/Desktop/git/GLRIBMPs/summaryPrintoutGLRI.R")
+fileName <- paste(pathToSave,"/", investigateResponse,"SummaryNoSeason.txt", sep="")
 summaryPrintout(modelReturn, siteINFO, saveOutput=TRUE,fileName)
 #####################################################
 

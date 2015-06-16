@@ -1,0 +1,32 @@
+CODcens  at  General Mitchell Airport Sites @ Milwaukee WI  ( )
+Number of observations:  103 
+Distribution:  lognormal 
+Method:  AMLE 
+Degrees of freedom:  17 
+RMSE:  0.6389079 
+RSQ:  88.54642 
+Number of censored values:  0 
+CODcens ~ (Intercept) + log(A473) + cosDY + sinDY + log(Sag281_299) + Sag473_491 + log(A452) + Sag482_500 
+
+             Term Coefficient StdError pValue StCoef
+1     (Intercept)      30.657    1.802  0.000 17.015
+2       log(A473)       4.985    0.680  0.000  7.327
+3           cosDY       0.895    0.153  0.000  5.866
+4           sinDY       0.969    0.121  0.000  7.992
+5 log(Sag281_299)       4.932    0.348  0.000 14.160
+6      Sag473_491      13.965    2.671  0.000  5.229
+7       log(A452)      -3.973    0.751  0.000 -5.289
+8      Sag482_500       6.141    2.008  0.002  3.059
+9        logSigma       0.408    0.056  0.000  7.246
+
+Correlation matrix of coefficients: 
+                (Intercept) log(A473)   cosDY   sinDY log(Sag281_299) Sag473_491 log(A452) Sag482_500 logSigma
+(Intercept)          1.0000   -0.4689 -0.0443 -0.4189          0.9639    -0.1749    0.5635    -0.0938        0
+log(A473)           -0.4689    1.0000 -0.1710  0.2146         -0.4819     0.6756   -0.9889     0.3810        0
+cosDY               -0.0443   -0.1710  1.0000  0.1825         -0.0331    -0.1371    0.1739    -0.1022        0
+sinDY               -0.4189    0.2146  0.1825  1.0000         -0.3348     0.1427   -0.2624     0.0802        0
+log(Sag281_299)      0.9639   -0.4819 -0.0331 -0.3348          1.0000    -0.2296    0.5470    -0.1198        0
+Sag473_491          -0.1749    0.6756 -0.1371  0.1427         -0.2296     1.0000   -0.6308     0.1209        0
+log(A452)            0.5635   -0.9889  0.1739 -0.2624          0.5470    -0.6308    1.0000    -0.3550        0
+Sag482_500          -0.0938    0.3810 -0.1022  0.0802         -0.1198     0.1209   -0.3550     1.0000        0
+logSigma             0.0000    0.0000  0.0000  0.0000          0.0000     0.0000    0.0000     0.0000        1

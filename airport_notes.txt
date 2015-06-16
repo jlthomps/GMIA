@@ -1,6 +1,11 @@
 Airport 
 
 6/2015
+?s
+COD values for 2014/15 (time we have optical) have no remarks
+DOC regression - data? don't see in spreadsheets or NWISWeb
+outliers - CG S111 and OUT S105G for run w/o seasonality; OUTS114A and OUTS105G for run w/ seasonality
+
 Prepping for Steve's mtg w/ GMIA and DNR in early July, as well as eventual publication
 Got all questions on DOC vs COD data answered and fixed by Pete
 For the paper - similar to pavement deicer paper

@@ -22,13 +22,13 @@ plotStepsGMIA <- function (steps, localDT, transformResponse = "lognormal")
     outlier <- findOutliers(modelReturn, localDT, transformResponse)
     responseValue <- localDT[, responseVariable]@.Data[, 
                                                        2]
-    Site <- as.numeric(localDT[,"Site"])
+    Site <- localDT[,"Site"]
     df <- data.frame(obs = responseValue, pred = modelReturn$YPRED,Site=Site,stringsAsFactors=FALSE)
     dfOutliers <- data.frame(obsOut = responseValue[outlier], 
                              predOut = modelReturn$YPRED[outlier])
     lineFit <- do.call("lm", list(lmFormula, data = df))
     par(tcl = 0.3)
-    plot(df$pred, df$obs, ylab = "Observed", xlab = "Predicted", pch=df$Site,
+    plot(df$pred, df$obs, ylab = "Observed", xlab = "Predicted", pch=20, col=df$Site,
          main = paste(responseVariable, i, sep = ":"), ylim = c(yMin, 
                                                                 max(c(df$obs, df$pred))), xlim = c(xMin, max(c(df$obs, 
                                                                                                                df$pred))), log = logPlot)
@@ -46,7 +46,7 @@ plotStepsGMIA <- function (steps, localDT, transformResponse = "lognormal")
     formulaSplit <- unlist(strsplit(formulaToUse,'+',fixed=TRUE))
     coefs <- coef(modelReturn)
     signs <- ifelse(coefs<0,'-','+')
-    formulaToUse <- paste(signs[-1],formulaSplit[-1],sep="")
+    formulaToUse <- paste(signs[-1],round(coefs[-1],2),formulaSplit[-1],sep="")
     formulaToUse <- paste(formulaToUse,collapse="")
     formulaToUse <- paste(responseVariable, formulaToUse, sep = " ~ ")
     mtext(formulaToUse, side = 3, line = -1, cex = 0.7)
@@ -57,7 +57,7 @@ plotStepsGMIA <- function (steps, localDT, transformResponse = "lognormal")
                       ", R2: ", formatC(modelReturn$RSQ/100, digits=4), 
                       sep = "")
     mtext(goodness, side = 1, line = -1.5, cex = 0.7)
-    legend("topleft",c("LK","CG","OAK","OUT"),pch=c(1,2,3,4))
+    legend("topleft",c("LK","CG","OAK","OUT"),pch=c(20,20,20,20),col=c("#E69F00","#009E73","#0072B2","#CC79A7"))
   }
   par(parOriginal)
 }
