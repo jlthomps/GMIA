@@ -45,7 +45,7 @@ plotStepsGMIA <- function (steps, localDT, transformResponse = "lognormal")
     formulaToUse <- steps$scope[i]
     formulaSplit <- unlist(strsplit(formulaToUse,'+',fixed=TRUE))
     coefs <- coef(modelReturn)
-    signs <- ifelse(coefs<0,'-','+')
+    signs <- ifelse(coefs<0,'','+')
     formulaToUse <- paste(signs[-1],round(coefs[-1],2),formulaSplit[-1],sep="")
     formulaToUse <- paste(formulaToUse,collapse="")
     formulaToUse <- paste(responseVariable, formulaToUse, sep = " ~ ")
