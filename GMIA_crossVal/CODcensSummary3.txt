@@ -1,0 +1,32 @@
+CODcens  at  General Mitchell Airport Sites @ Milwaukee WI  ( )
+Number of observations:  83 
+Distribution:  lognormal 
+Method:  AMLE 
+Degrees of freedom:  13 
+RMSE:  0.6174016 
+RSQ:  89.83146 
+Number of censored values:  0 
+CODcens ~ (Intercept) + log(A482) + sinDY + cosDY + log(Sag281_299) + Sag482_500 + log(A476) + log(Sag482_500) 
+
+             Term Coefficient StdError pValue StCoef
+1     (Intercept)      29.957    1.899  0.000 15.772
+2       log(A482)       9.383    1.711  0.000  5.483
+3           sinDY       0.968    0.119  0.000  8.129
+4           cosDY       0.920    0.155  0.000  5.923
+5 log(Sag281_299)       5.262    0.319  0.000 16.480
+6      Sag482_500      19.530    3.820  0.000  5.113
+7       log(A476)      -8.380    1.788  0.000 -4.686
+8 log(Sag482_500)      -0.366    0.169  0.025 -2.167
+9        logSigma       0.381    0.058  0.000  6.519
+
+Correlation matrix of coefficients: 
+                (Intercept) log(A482)   sinDY   cosDY log(Sag281_299) Sag482_500 log(A476) log(Sag482_500) logSigma
+(Intercept)          1.0000   -0.5094 -0.3742 -0.1099          0.8467    -0.4303    0.5405          0.4517        0
+log(A482)           -0.5094    1.0000  0.1625 -0.0077         -0.3072     0.7382   -0.9983         -0.3435        0
+sinDY               -0.3742    0.1625  1.0000  0.1642         -0.2646     0.1743   -0.1771         -0.1590        0
+cosDY               -0.1099   -0.0077  0.1642  1.0000         -0.1311    -0.0563    0.0088          0.0286        0
+log(Sag281_299)      0.8467   -0.3072 -0.2646 -0.1311          1.0000    -0.1163    0.3319          0.0065        0
+Sag482_500          -0.4303    0.7382  0.1743 -0.0563         -0.1163     1.0000   -0.7242         -0.6973        0
+log(A476)            0.5405   -0.9983 -0.1771  0.0088          0.3319    -0.7242    1.0000          0.3378        0
+log(Sag482_500)      0.4517   -0.3435 -0.1590  0.0286          0.0065    -0.6973    0.3378          1.0000        0
+logSigma             0.0000    0.0000  0.0000  0.0000          0.0000     0.0000    0.0000          0.0000        1

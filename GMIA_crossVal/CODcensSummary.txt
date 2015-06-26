@@ -1,0 +1,45 @@
+CODcens  at  General Mitchell Airport Sites @ Milwaukee WI  ( )
+Number of observations:  80 
+Distribution:  lognormal 
+Method:  AMLE 
+Degrees of freedom:  13 
+RMSE:  0.6234199 
+RSQ:  89.91534 
+Number of censored values:  0 
+CODcens ~ (Intercept) + log(A473) + sinDY + cosDY + log(Sag281_299) + Sag473_491 + log(Sag239_248) + Sag239_248 + Resids490 
+
+              Term Coefficient StdError pValue StCoef
+1      (Intercept)      70.472   10.965  0.000  6.427
+2        log(A473)       1.496    0.112  0.000 13.336
+3            sinDY       0.836    0.128  0.000  6.507
+4            cosDY       0.829    0.167  0.000  4.974
+5  log(Sag281_299)       4.975    0.372  0.000 13.360
+6       Sag473_491       8.380    2.128  0.000  3.938
+7  log(Sag239_248)       8.009    2.259  0.000  3.545
+8       Sag239_248    -302.179  103.917  0.003 -2.908
+9        Resids490     182.164   88.271  0.031  2.064
+10        logSigma       0.389    0.061  0.000  6.403
+
+Correlation matrix of coefficients: 
+                (Intercept) log(A473)   sinDY   cosDY log(Sag281_299) Sag473_491 log(Sag239_248) Sag239_248 Resids490
+(Intercept)          1.0000    0.1169 -0.1735 -0.2308          0.0329     0.0804          0.9866    -0.9803   -0.0127
+log(A473)            0.1169    1.0000 -0.2491  0.0249          0.1840     0.5447          0.0359    -0.0395    0.3237
+sinDY               -0.1735   -0.2491  1.0000  0.2542         -0.2453     0.0068         -0.1192     0.1276    0.1146
+cosDY               -0.2308    0.0249  0.2542  1.0000         -0.1640    -0.0534         -0.2006     0.2086    0.0576
+log(Sag281_299)      0.0329    0.1840 -0.2453 -0.1640          1.0000     0.0149         -0.1171     0.0764   -0.4478
+Sag473_491           0.0804    0.5447  0.0068 -0.0534          0.0149     1.0000          0.0548    -0.0307    0.1769
+log(Sag239_248)      0.9866    0.0359 -0.1192 -0.2006         -0.1171     0.0548          1.0000    -0.9812    0.0177
+Sag239_248          -0.9803   -0.0395  0.1276  0.2086          0.0764    -0.0307         -0.9812     1.0000   -0.0619
+Resids490           -0.0127    0.3237  0.1146  0.0576         -0.4478     0.1769          0.0177    -0.0619    1.0000
+logSigma             0.0000    0.0000  0.0000  0.0000          0.0000     0.0000          0.0000     0.0000    0.0000
+                logSigma
+(Intercept)            0
+log(A473)              0
+sinDY                  0
+cosDY                  0
+log(Sag281_299)        0
+Sag473_491             0
+log(Sag239_248)        0
+Sag239_248             0
+Resids490              0
+logSigma               1

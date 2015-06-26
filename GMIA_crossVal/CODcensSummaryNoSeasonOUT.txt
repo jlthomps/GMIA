@@ -1,0 +1,30 @@
+CODcens  at  General Mitchell Airport Sites @ Milwaukee WI  ( )
+Number of observations:  47 
+Distribution:  lognormal 
+Method:  AMLE 
+Degrees of freedom:  6 
+RMSE:  0.7515669 
+RSQ:  81.12596 
+Number of censored values:  0 
+CODcens ~ (Intercept) + log(A239) + A302 + A494 + A500 + log(A506) + log(Sag281_299) 
+
+             Term Coefficient StdError pValue StCoef
+1     (Intercept)      32.689    4.727  0.000  6.915
+2       log(A239)       3.137    0.827  0.000  3.792
+3            A302     -62.884   13.462  0.000 -4.671
+4            A494    3504.492  830.632  0.000  4.219
+5            A500   -3365.071  843.190  0.000 -3.991
+6       log(A506)       0.891    0.277  0.001  3.221
+7 log(Sag281_299)       3.435    1.411  0.011  2.435
+8        logSigma       0.565    0.114  0.000  4.950
+
+Correlation matrix of coefficients: 
+                (Intercept) log(A239)    A302    A494    A500 log(A506) log(Sag281_299) logSigma
+(Intercept)          1.0000   -0.5902  0.5799  0.0811 -0.1146    0.5793          0.9029        0
+log(A239)           -0.5902    1.0000 -0.9275 -0.0128  0.0417   -0.3835         -0.7793        0
+A302                 0.5799   -0.9275  1.0000 -0.1258  0.0951    0.2960          0.7866        0
+A494                 0.0811   -0.0128 -0.1258  1.0000 -0.9956   -0.0193          0.0811        0
+A500                -0.1146    0.0417  0.0951 -0.9956  1.0000   -0.0575         -0.0941        0
+log(A506)            0.5793   -0.3835  0.2960 -0.0193 -0.0575    1.0000          0.2961        0
+log(Sag281_299)      0.9029   -0.7793  0.7866  0.0811 -0.0941    0.2961          1.0000        0
+logSigma             0.0000    0.0000  0.0000  0.0000  0.0000    0.0000          0.0000        1

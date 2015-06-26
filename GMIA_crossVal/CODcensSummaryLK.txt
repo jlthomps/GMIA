@@ -1,0 +1,32 @@
+CODcens  at  General Mitchell Airport Sites @ Milwaukee WI  ( )
+Number of observations:  73 
+Distribution:  lognormal 
+Method:  AMLE 
+Degrees of freedom:  11 
+RMSE:  0.5039679 
+RSQ:  92.68076 
+Number of censored values:  0 
+CODcens ~ (Intercept) + log(A473) + log(Sag281_299) + sinDY + cosDY + Sag482_500 + Sag473_491 + log(A446) 
+
+             Term Coefficient StdError pValue StCoef
+1     (Intercept)      26.765    1.666  0.000 16.069
+2       log(A473)       4.296    0.468  0.000  9.177
+3 log(Sag281_299)       4.210    0.306  0.000 13.780
+4           sinDY       1.173    0.121  0.000  9.675
+5           cosDY       0.938    0.153  0.000  6.128
+6      Sag482_500       4.823    1.665  0.003  2.896
+7      Sag473_491      12.987    2.350  0.000  5.527
+8       log(A446)      -3.533    0.514  0.000 -6.881
+9        logSigma       0.254    0.041  0.000  6.124
+
+Correlation matrix of coefficients: 
+                (Intercept) log(A473) log(Sag281_299)   sinDY   cosDY Sag482_500 Sag473_491 log(A446) logSigma
+(Intercept)          1.0000   -0.2727          0.9581 -0.4869 -0.2038     0.0509     0.0044    0.4568        0
+log(A473)           -0.2727    1.0000         -0.3437  0.2203 -0.2102     0.4339     0.7278   -0.9716        0
+log(Sag281_299)      0.9581   -0.3437          1.0000 -0.3993 -0.1492    -0.0107    -0.0948    0.4805        0
+sinDY               -0.4869    0.2203         -0.3993  1.0000  0.2032     0.0720     0.1386   -0.3146        0
+cosDY               -0.2038   -0.2102         -0.1492  0.2032  1.0000    -0.1849    -0.2401    0.1673        0
+Sag482_500           0.0509    0.4339         -0.0107  0.0720 -0.1849     1.0000     0.2335   -0.3706        0
+Sag473_491           0.0044    0.7278         -0.0948  0.1386 -0.2401     0.2335     1.0000   -0.6425        0
+log(A446)            0.4568   -0.9716          0.4805 -0.3146  0.1673    -0.3706    -0.6425    1.0000        0
+logSigma             0.0000    0.0000          0.0000  0.0000  0.0000     0.0000     0.0000    0.0000        1
