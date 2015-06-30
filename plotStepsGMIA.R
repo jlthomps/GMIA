@@ -33,7 +33,7 @@ plotStepsGMIA <- function (steps, localDT, transformResponse = "lognormal")
                                                                 max(c(df$obs, df$pred))), xlim = c(xMin, max(c(df$obs, 
                                                                                                                df$pred))), log = logPlot)
     points(dfOutliers$predOut, dfOutliers$obsOut, col = "red", 
-           pch = 16)
+           pch = 21)
     if (sum(modelReturn$CENSFLAG) > 0) {
       cenValsX <- modelReturn$YPRED[modelReturn$CENSFLAG]
       cenValsY <- responseValue[modelReturn$CENSFLAG]
