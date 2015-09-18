@@ -214,7 +214,7 @@ dataMerge <- dataMerge[which(!is.na(dataMerge$COD)),]
 dataMerge$decYear <- getDecYear(dataMerge$datetime)
 dataMerge$sinDY <- sin(dataMerge$decYear*2*pi)
 dataMerge$cosDY <- cos(dataMerge$decYear*2*pi)
-dataMerge$remark <- ""
+#dataMerge$remark <- ""
 #dataMerge <- transform(dataMerge,app600=(A617+A620+A623+A626+A629+A632+A635+A638+A641+A644)) 
 #dataMerge <- transform(dataMerge,app500=(A488+A491+A494+A497+A500+A503+A506+A509))
 #dataMerge <- transform(dataMerge,app420=(A416+A419+A422+A425+A428+A431+A434))
