@@ -112,6 +112,9 @@ FinalAbsDf$TypeIV <- FinalAbsDf$`Kilfrost ABC-S plus Type IV_Group002GMIA0005_20
 FinalAbsDf$Pavement <- FinalAbsDf$`Cryotech E36 Pavement Pot. Acetate_Group003GMIA0004_2014/20141216`+FinalAbsDf$`Sodium Formate pavement_Group003GMIA0005_2014/20141216`
 
 pdf("DeicerDyePlots.pdf")
+par(mfrow = c(2,2))
 plot(FinalAbsDf$Wavelength,FinalAbsDf$TypeI,lwd=1.5,col="yellowgreen",ylim=c(0,15),type="l",main="Deicer optical Runs Type IV",xlab="Wavelength",ylab="Absorbence")
 plot(FinalAbsDf$Wavelength,FinalAbsDf$TypeIV,lwd=1.5,col="red",ylim=c(0,30),type="l",main="Deicer optical Runs Type IV",xlab="Wavelength",ylab="Absorbence")
-plot(FinalAbsDf$Wavelength,FinalAbsDf$Pavement,lwd=1.5,col="blue",ylim=c(0,10),type="l",main="Deicer Optical Runs Pavement",)
+plot(FinalAbsDf$Wavelength,FinalAbsDf$Pavement,lwd=1.5,col="blue",ylim=c(0,10),type="l",main="Deicer Optical Runs Pavement",xlab="Wavelength",ylab="Absorbence")
+plot(FinalAbsDf$Wavelength,FinalAbsDf$Pavement,lwd=1.5,col="blue",ylim=c(0,10),type="l",main="Deicer Optical Runs Pavement",xlab="Wavelength",ylab="Absorbence")
+dev.off()

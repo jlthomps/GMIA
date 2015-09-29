@@ -20,7 +20,7 @@ data_sub <- dataMerge[,keepCols]
 data_sub$Site <- ifelse(data_sub$Site=='CG',"#009E73",ifelse(data_sub$Site=='LK',"#E69F00",ifelse(data_sub$Site=='OAK',"#0072B2","#CC79A7")))
 
 keepAll <- colnames(data_sub)
-keepAll <- keepAll[-which(keepAll %in% c("remark","DOCResult","logCOD","logDOC","COD"))]
+keepAll <- keepAll[-which(keepAll %in% c("remark","DOCResult","logCOD","logDOC","COD","Acetate","rEGlycol","Eglycol","rPGlycol","Pglycol","SiteAll","SiteCG","SiteLK","SiteOAK","SiteOUT"))]
 data_sub_cens <- importQW(data_sub,keep=keepAll,"DOCResult","remark","",0.0000002,"User","kg","Unk","","00681","DOCcens")
 siteName <- "GMIAdoc"
 siteNo <- '040871475'
@@ -105,8 +105,9 @@ data_sub <- dataMerge[,keepCols]
 data_sub$Site <- ifelse(data_sub$Site=='CG',"#009E73",ifelse(data_sub$Site=='LK',"#E69F00",ifelse(data_sub$Site=='OAK',"#0072B2","#CC79A7")))
 
 keepAll <- colnames(data_sub)
-keepAll <- keepAll[-which(keepAll %in% c("remark","DOCResult","logCOD","logDOC","COD"))]
+keepAll <- keepAll[-which(keepAll %in% c("remark","DOCResult","logCOD","logDOC","COD","Acetate","rEGlycol","Eglycol","rPGlycol","Pglycol","SiteAll","SiteCG","SiteLK","SiteOAK","SiteOUT"))]
 data_sub_cens <- importQW(data_sub,keep=keepAll,"DOCResult","remark","",0.0000002,"User","kg","Unk","","00681","DOCcens")
+
 siteName <- "GMIAdoc"
 siteNo <- '040871475'
 siteINFO <-  readNWISsite(siteNo)
