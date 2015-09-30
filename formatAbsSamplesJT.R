@@ -4,12 +4,12 @@
 #changed filesNeeded into to include project information in output
 formatAbsSamplesJT <- function(dateLower,dateUpper,Type,Project){
   
-  dateRangeFiles <- list.files(path='//igsarmewwshg9/HG9Data/AquaLog/AquaLog_Data')
-  XLfile <- grep('xlsx',dateRangeFiles)
-  dateRangeFiles <- dateRangeFiles[-c(XLfile)]
-  dateRangeFiles <- dateRangeFiles[which(dateRangeFiles <= dateUpper)]
-  dateRangeFiles <- dateRangeFiles[which(dateRangeFiles >= dateLower)]  
-  dateRangeFiles <- dateRangeFiles[which(dateRangeFiles!='2014')]
+#   dateRangeFiles <- list.files(path='//igsarmewwshg9/HG9Data/AquaLog/AquaLog_Data')
+#   XLfile <- grep('xlsx',dateRangeFiles)
+#   dateRangeFiles <- dateRangeFiles[-c(XLfile)]
+#   dateRangeFiles <- dateRangeFiles[which(dateRangeFiles <= dateUpper)]
+#   dateRangeFiles <- dateRangeFiles[which(dateRangeFiles >= dateLower)]  
+#   dateRangeFiles <- dateRangeFiles[which(dateRangeFiles!='2014')]
   
   dateRangeFilesb <- list.files(path='//igsarmewwshg9/HG9Data/AquaLog/AquaLog_Data/2013')
   dateRangeFilesb <- dateRangeFilesb[which(dateRangeFilesb <= dateUpper)]
@@ -22,8 +22,15 @@ formatAbsSamplesJT <- function(dateLower,dateUpper,Type,Project){
   dateRangeFilesc <- dateRangeFilesc[which(nchar(dateRangeFilesc)<10)]
   dateRangeFilesc <- paste('2014/',dateRangeFilesc,sep="")
   
-  dateRangeFiles <- append(dateRangeFiles,dateRangeFilesb)
+  dateRangeFilesd <- list.files(path='//igsarmewwshg9/HG9Data/AquaLog/AquaLog_Data/2015')
+  dateRangeFilesd <- dateRangeFilesd[which(dateRangeFilesd <= dateUpper)]
+  dateRangeFilesd <- dateRangeFilesd[which(dateRangeFilesd >= dateLower)]
+  dateRangeFilesd <- dateRangeFilesd[which(nchar(dateRangeFilesd)<10)]
+  dateRangeFilesd <- paste('2015/',dateRangeFilesd,sep="")
+  
+  dateRangeFiles <- dateRangeFilesb
   dateRangeFiles <- append(dateRangeFiles,dateRangeFilesc)
+  dateRangeFiles <- append(dateRangeFiles,dateRangeFilesd)
   #dateRangeFiles <- dateRangeFiles[-which(dateRangeFiles=='20150223')]
   #dateRangeFiles <- dateRangeFiles[-which(dateRangeFiles=='2014/20141219')]
   
@@ -40,6 +47,9 @@ formatAbsSamplesJT <- function(dateLower,dateUpper,Type,Project){
     allFiles <- list.files(path='.')
     
     DescriptionFile <- allFiles[grep('.csv',allFiles)]
+    if (length(DescriptionFile)==0) {
+      AbsList[[i]] <- NA
+    } else {
     DescriptionFile <- read.csv(DescriptionFile,header=TRUE,stringsAsFactors=FALSE)
     DescriptionFile <- DescriptionFile[which(DescriptionFile[,1] !=''),]
     
@@ -109,7 +119,9 @@ formatAbsSamplesJT <- function(dateLower,dateUpper,Type,Project){
       }
     }
     AbsList[[i]] <- AbsDf
-  }}
+    }
+    }
+  }
   
   AbsList[sapply(AbsList,is.null)] <- NULL
   FinalAbsDf <- do.call("cbind", AbsList)

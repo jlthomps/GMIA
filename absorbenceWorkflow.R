@@ -1,6 +1,6 @@
 # library(USGSAqualogFormatting)
 # source("C:/Users/jlthomps/Desktop/git/GMIA/formatAbsSamplesJT.R")
-# FinalAbsDf <- formatAbsSamplesJT(dateLower='20130930',dateUpper='20140918',Type='All',Project='GMIA')
+# FinalAbsDf <- formatAbsSamplesJT(dateLower='20130930',dateUpper='20150911',Type='All',Project='GMIA')
 # #FinalAbsDfSESQ <- formatAbsSamplesJT(dateLower='20130930',dateUpper='20140918',Type='All',Project='SESQA')
 # # had to do some fooling around in function b/c of missing files in 20140121b
 # # also added Project ID to name so can differentiate OUT/LK/CG
@@ -9,7 +9,8 @@
 # testnames <- gsub("USGS","Group",testnames)
 # colnames(FinalAbsDf) <- testnames
 # #wavs <- c(251,254,257)
-# testnames <- testnames[1:274]
+# testnames <- testnames[-359]
+# testnames <- testnames[which(!testnames=="NA")]
 # test <- data.frame(testnames,stringsAsFactors=FALSE)
 # colnames(test) <- "GRnumber"
 # wavs <- unique(FinalAbsDf$Wavelength)
@@ -25,77 +26,69 @@
 # save(testAbs,file="testAbs.RData")
 # save(FinalAbsDf,file="FinalAbsDf.RData")
 
-# setwd("/Users/jlthomps/Desktop/git/GMIA")
-# load("testAbs.RData")
-# FinalAbsDf <- read.table("FinalAbsDf.csv",stringsAsFactors=FALSE,sep=",",header=TRUE)
-# #load("FinalAbsDf.RData")
-# FinalAbsDf <- FinalAbsDf[,-1]
-# tempname <- colnames(FinalAbsDf)
-# tempname <- gsub("2013.","2013/",tempname,fixed=TRUE)
-# tempname <- gsub("2014.","2014/",tempname,fixed=TRUE)
-# tempname <- gsub(".","-",tempname,fixed=TRUE)
-# colnames(FinalAbsDf) <- tempname
-# 
-# temp <- testAbs$GRnumber
-# temp2 <- substr(testAbs$GRnumber,unlist(gregexpr(pattern="_2",temp))+1,unlist(gregexpr(pattern="_2",temp))+13)
-# temp3 <- temp
-# c <- grep("redo",temp)
-# for (i in 1:length(temp)) {
-#   a <- temp[i]
-#   b <- unlist(strsplit(a,"_"))
-#   temp3[i] <- b[1]
-#   if (i %in% c) {temp3[i] <- substr(temp3[i],1,nchar(temp3[i])-4)}
-# }
-# 
-# testAbs$date <- substr(temp2,nchar(temp2)-7,nchar(temp2))
-# testAbs$ProjectID <- temp3
-# testAbs$datetime <- strptime(testAbs$date,format="%Y%m%d")
-# testAbsGMIA <- testAbs[substr(testAbs$ProjectID,1,2) %in% c("OU","Ou","CG","LK","US","OA"),]
-# 
-# testAbsOAK <- testAbs[grep("OAK-",testAbs$ProjectID),]
-# testAbsOAK <- testAbsOAK[which(paste(testAbsOAK$ProjectID,testAbsOAK$date,sep="")!="OAK-S10720140225"),]
-# 
-# testAbsOUT <- testAbs[substr(testAbs$ProjectID,1,2) %in% c("OU","Ou"),]
-# testAbsOUT <- testAbsOUT[-grep("-R",testAbsOUT$ProjectID),]
-# testAbsOUT <- testAbsOUT[which(paste(testAbsOUT$ProjectID,testAbsOUT$date,sep="")!="OUT-S10720140225"),]
-# testAbsOUT <- testAbsOUT[which(paste(testAbsOUT$ProjectID,testAbsOUT$date,sep="")!="OUT-S107G20140225"),]
-# testAbsOUT <- testAbsOUT[which(substr(testAbsOUT$GRnumber,1,18)!="OUT-S110G_Group003"),]
-# testAbsOUT$ProjectID <- gsub('Out','OUT',testAbsOUT$ProjectID)
-# 
-# testAbsCG <- testAbs[grep("CG-",testAbs$ProjectID),]
-# testAbsCG <- testAbsCG[which(paste(testAbsCG$ProjectID,testAbsCG$date,sep="")!="CG-S10720140225"),]
-# testAbsCG <- testAbsCG[which(testAbsCG$ProjectID!="CG-Q23C"),]
-# 
-# testAbsLK <- testAbs[grep("LK-",testAbs$ProjectID),]
-# testAbsLK <- testAbsLK[which(testAbsLK$ProjectID!="LK-Q23C"),]
-# testAbsLK <- testAbsLK[-grep("-R",testAbsLK$ProjectID),]
-# testAbsLK <- testAbsLK[which(paste(testAbsLK$ProjectID,testAbsLK$date,sep="")!="LK-S10720140225"),]
-# testAbsLK <- testAbsLK[which(paste(testAbsLK$ProjectID,testAbsLK$date,sep="")!="LK-S107G20140225"),]
-# 
-# testAbsWorking <- rbind(testAbsOUT,testAbsCG)
-# testAbsWorking <- rbind(testAbsWorking,testAbsLK)
-# testAbsWorking <- rbind(testAbsWorking,testAbsOAK)
-# testAbsWorking <- testAbsWorking[-which(substr(testAbsWorking$GRnumber,1,1)=='Q'),]
-# 
-# grnumsIn <- unique(testAbsWorking$GRnumber)
-# #grnumsIn <- grnumsIn[-which(substr(grnumsIn,1,1)=='Q')]
-# grnumsIn <- c(grnumsIn,"Wavelength")
-# FinalAbsDf <- FinalAbsDf[,grnumsIn]
-# finalcols <- colnames(FinalAbsDf)
-# finalcols <- finalcols[which(substr(finalcols,1,2) %in% c("OU","Ou","CG","LK","OA","Wa"))]
-# finalcolsOUT <- finalcols[which(substr(finalcols,1,2) %in% c("OU","Ou"))]
-# finalcolsCG <- finalcols[which(substr(finalcols,1,2) %in% c("CG"))]
-# finalcolsLK <- finalcols[which(substr(finalcols,1,2) %in% c("LK"))]
-# finalcolsOA <- finalcols[which(substr(finalcols,1,2) %in% c("OA"))]
-# finalcolsALL <- finalcols[which(substr(finalcols,1,2) %in% c("OU","Ou","CG","LK","OA"))]
-# FinalAbsDf$meanAbs <- rowMeans(FinalAbsDf[,finalcolsALL])
-# FinalAbsDf$meanAbsOUT <- rowMeans(FinalAbsDf[,finalcolsOUT])
-# FinalAbsDf$meanAbsCG <- rowMeans(FinalAbsDf[,finalcolsCG])
-# FinalAbsDf$meanAbsLK <- rowMeans(FinalAbsDf[,finalcolsLK])
-# FinalAbsDf$meanAbsOA <- rowMeans(FinalAbsDf[,finalcolsOA])
-# FinalAbsDf[FinalAbsDf<0] <- NA
-# FinalAbsDf$minAbs <- do.call(pmin,c(FinalAbsDf[,finalcolsALL],na.rm=TRUE))
-# FinalAbsDf[is.na(FinalAbsDf)] <- min(FinalAbsDf$minAbs)
+# saved above files 09/30/2015 - all correct except missing OAK and OUT S106 with file issue
+
+temp <- testAbs$GRnumber
+temp2 <- substr(testAbs$GRnumber,unlist(gregexpr(pattern="_2",temp))+1,unlist(gregexpr(pattern="_2",temp))+13)
+temp3 <- temp
+c <- grep("redo",temp)
+for (i in 1:length(temp)) {
+  a <- temp[i]
+  b <- unlist(strsplit(a,"_"))
+  temp3[i] <- b[1]
+  if (i %in% c) {temp3[i] <- substr(temp3[i],1,nchar(temp3[i])-4)}
+}
+
+testAbs$date <- substr(temp2,nchar(temp2)-7,nchar(temp2))
+testAbs$ProjectID <- temp3
+testAbs$datetime <- strptime(testAbs$date,format="%Y%m%d")
+testAbsGMIA <- testAbs[substr(testAbs$ProjectID,1,2) %in% c("OU","Ou","CG","LK","US","OA"),]
+testAbsGMIA$ProjectID <- gsub("-R","",testAbsGMIA$ProjectID)
+
+testAbsOAK <- testAbs[grep("OAK-",testAbs$ProjectID),]
+testAbsOAK <- testAbsOAK[which(paste(testAbsOAK$ProjectID,testAbsOAK$date,sep="")!="OAK-S10720140225"),]
+
+testAbsOUT <- testAbs[substr(testAbs$ProjectID,1,2) %in% c("OU","Ou"),]
+testAbsOUT <- testAbsOUT[-grep("-R",testAbsOUT$ProjectID),]
+testAbsOUT <- testAbsOUT[which(paste(testAbsOUT$ProjectID,testAbsOUT$date,sep="")!="OUT-S10720140225"),]
+testAbsOUT <- testAbsOUT[which(paste(testAbsOUT$ProjectID,testAbsOUT$date,sep="")!="OUT-S107G20140225"),]
+testAbsOUT <- testAbsOUT[which(substr(testAbsOUT$GRnumber,1,18)!="OUT-S110G_Group003"),]
+testAbsOUT$ProjectID <- gsub('Out','OUT',testAbsOUT$ProjectID)
+
+testAbsCG <- testAbs[grep("CG-",testAbs$ProjectID),]
+testAbsCG <- testAbsCG[which(paste(testAbsCG$ProjectID,testAbsCG$date,sep="")!="CG-S10720140225"),]
+testAbsCG <- testAbsCG[which(testAbsCG$ProjectID!="CG-Q23C"),]
+
+testAbsLK <- testAbs[grep("LK-",testAbs$ProjectID),]
+testAbsLK <- testAbsLK[which(testAbsLK$ProjectID!="LK-Q23C"),]
+testAbsLK <- testAbsLK[-grep("-R",testAbsLK$ProjectID),]
+testAbsLK <- testAbsLK[which(paste(testAbsLK$ProjectID,testAbsLK$date,sep="")!="LK-S10720140225"),]
+testAbsLK <- testAbsLK[which(paste(testAbsLK$ProjectID,testAbsLK$date,sep="")!="LK-S107G20140225"),]
+
+testAbsWorking <- rbind(testAbsOUT,testAbsCG)
+testAbsWorking <- rbind(testAbsWorking,testAbsLK)
+testAbsWorking <- rbind(testAbsWorking,testAbsOAK)
+testAbsWorking <- testAbsWorking[-which(substr(testAbsWorking$GRnumber,1,1)=='Q'),]
+
+grnumsIn <- unique(testAbsWorking$GRnumber)
+#grnumsIn <- grnumsIn[-which(substr(grnumsIn,1,1)=='Q')]
+grnumsIn <- c(grnumsIn,"Wavelength")
+FinalAbsDf <- FinalAbsDf[,grnumsIn]
+finalcols <- colnames(FinalAbsDf)
+finalcols <- finalcols[which(substr(finalcols,1,2) %in% c("OU","Ou","CG","LK","OA","Wa"))]
+finalcolsOUT <- finalcols[which(substr(finalcols,1,2) %in% c("OU","Ou"))]
+finalcolsCG <- finalcols[which(substr(finalcols,1,2) %in% c("CG"))]
+finalcolsLK <- finalcols[which(substr(finalcols,1,2) %in% c("LK"))]
+finalcolsOA <- finalcols[which(substr(finalcols,1,2) %in% c("OA"))]
+finalcolsALL <- finalcols[which(substr(finalcols,1,2) %in% c("OU","Ou","CG","LK","OA"))]
+FinalAbsDf$meanAbs <- rowMeans(FinalAbsDf[,finalcolsALL])
+FinalAbsDf$meanAbsOUT <- rowMeans(FinalAbsDf[,finalcolsOUT])
+FinalAbsDf$meanAbsCG <- rowMeans(FinalAbsDf[,finalcolsCG])
+FinalAbsDf$meanAbsLK <- rowMeans(FinalAbsDf[,finalcolsLK])
+FinalAbsDf$meanAbsOA <- rowMeans(FinalAbsDf[,finalcolsOA])
+FinalAbsDf[FinalAbsDf<0] <- NA
+FinalAbsDf$minAbs <- do.call(pmin,c(FinalAbsDf[,finalcolsALL],na.rm=TRUE))
+FinalAbsDf[is.na(FinalAbsDf)] <- min(FinalAbsDf$minAbs)
 # 
 # pathToSave <- "/Users/jlthomps/Documents/R/GMIA"
 # colsKeep <- c('Wavelength','meanAbs','meanAbsCG','meanAbsOUT','meanAbsOA','meanAbsLK')
