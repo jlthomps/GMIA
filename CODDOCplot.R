@@ -117,3 +117,5 @@ mtext(paste("log(COD) = ",round(coef(lmfit)[1],3)," + ",round(coef(lmfit)[2],3),
 legend("topleft",c("LK","CG","OAK","OUT"),pch=c(20,20,20,20),col=c("#999999","#999999","#999999","#CC79A7"))
 par(parOriginal)
 dev.off()
+
+# save(DfFinal,file="CODDOCMerge.RData") file saved 10/7/15

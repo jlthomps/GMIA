@@ -1,6 +1,7 @@
 # Cross-validation of COD regression using 5 random groups
-load("FinalAbsData.RData")
-COD2014 <- read.csv(file="COD2014.csv",stringsAsFactors=FALSE)
+setwd("C:/Users/jlthomps/Desktop/git/GMIA")
+load("GMIASagFinal.RData")
+COD2014 <- read.csv(file="COD2014.csv",stringsAsFactors=FALSE,colClasses=c("character","character","numeric","character","numeric","character","character","character","numeric","character","numeric","character","numeric","character","numeric","character","numeric"))
 COD2014$ProjectID <- paste(COD2014$Site,COD2014$Storm,sep="-")
 dataMerge <- merge(COD2014,GMIASag,by="ProjectID")
 numRow <- nrow(dataMerge)
@@ -16,13 +17,13 @@ dataMerge$sinDY <- sin(dataMerge$decYear*2*pi)
 dataMerge$cosDY <- cos(dataMerge$decYear*2*pi)
 dataMerge$remark <- ""
 keepCols <- colnames(dataMerge)
-keepCols <- keepCols[-which(keepCols %in% c("ProjectID","Storm","Volume","GRnumber","randNum","date","datetime","startDate","endDate"))]
+keepCols <- keepCols[-which(keepCols %in% c("ProjectID","Storm","Volume","GRnumber","date","datetime","startDate","endDate"))]
 data_sub <- dataMerge[,keepCols]
 data_sub$Site <- ifelse(data_sub$Site=='CG',"#009E73",ifelse(data_sub$Site=='LK',"#E69F00",ifelse(data_sub$Site=='OAK',"#0072B2","#CC79A7")))
 
 keepAll <- colnames(data_sub)
-keepAll <- keepAll[-which(keepAll %in% c("remark","COD","DOCResult","logCOD","logDOC"))]
-data_sub_cens <- importQW(data_sub,keep=keepAll,"COD","remark","",0.0000002,"User","kg","Unk","","00335","CODcens")
+keepAll <- keepAll[-which(keepAll %in% c("remark","DOCResult","logCOD","logDOC","COD","rCOD","rBOD","BOD","rFormate","Formate","rAcetate","Acetate","rEGlycol","Eglycol","rPGlycol","Pglycol","SiteAll","SiteCG","SiteLK","SiteOAK","SiteOUT"))]
+data_sub_cens <- importQW(data_sub,keep=keepAll,"COD","rCOD","",0.0000002,"User","kg","Unk","","00335","CODcens")
 siteName <- "GMIA_crossVal"
 siteNo <- '040871475'
 siteINFO <-  readNWISsite(siteNo)
@@ -38,7 +39,13 @@ pathToSave <- paste("/Users/jlthomps/Documents/R/",siteName,sep="")
 predictVariables <- names(data_sub_cens)[-which(names(data_sub_cens) %in% investigateResponse)]
 predictVariables <- predictVariables[which(predictVariables != "datetime")]
 predictVariables <- predictVariables[which(predictVariables != "decYear")]
-kitchenSink <- createFullFormula(data_sub_cens[,-1],investigateResponse)
+predictVariables <- predictVariables[which(predictVariables != "Site")]
+
+logVariables <- names(which(sapply(data_sub_cens[, which(names(data_sub_cens) %in% predictVariables)], function(x) min(as.numeric(x), na.rm = TRUE)) > 0))
+predictString <- paste(setdiff(predictVariables,logVariables[which(substr(logVariables,1,1)=="A")]), collapse = " + ")
+logString <- as.character(sapply(paste("log(", logVariables[which(substr(logVariables,1,1)=="A")], ")", sep = ""), function(x) x))
+logString <- paste(logString, collapse = " + ")
+kitchenSink <- paste(predictString, logString, sep = " + ")
 
 returnPrelim <- prelimModelDev(data_sub_cens,investigateResponse,kitchenSink,
                                "BIC", #Other option is "AIC"
@@ -91,8 +98,9 @@ data_sub <- dataMerge[,keepCols]
 data_sub$Site <- ifelse(data_sub$Site=='CG',"#009E73",ifelse(data_sub$Site=='LK',"#E69F00",ifelse(data_sub$Site=='OAK',"#0072B2","#CC79A7")))
 
 keepAll <- colnames(data_sub)
-keepAll <- keepAll[-which(keepAll %in% c("remark","COD","DOCResult","logCOD","logDOC"))]
-data_sub_cens <- importQW(data_sub,keep=keepAll,"COD","remark","",0.0000002,"User","kg","Unk","","00335","CODcens")
+keepAll <- keepAll[-which(keepAll %in% c("remark","DOCResult","logCOD","logDOC","COD","rCOD","rBOD","BOD","rFormate","Formate","rAcetate","Acetate","rEGlycol","Eglycol","rPGlycol","Pglycol","SiteAll","SiteCG","SiteLK","SiteOAK","SiteOUT"))]
+data_sub_cens <- importQW(data_sub,keep=keepAll,"COD","rCOD","",0.0000002,"User","kg","Unk","","00335","CODcens")
+
 siteName <- "GMIA_crossVal"
 siteNo <- '040871475'
 siteINFO <-  readNWISsite(siteNo)
@@ -109,7 +117,13 @@ pathToSave <- paste("/Users/jlthomps/Documents/R/",siteName,sep="")
 predictVariables <- names(data_sub_cens)[-which(names(data_sub_cens) %in% investigateResponse)]
 predictVariables <- predictVariables[which(predictVariables != "datetime")]
 predictVariables <- predictVariables[which(predictVariables != "decYear")]
-kitchenSink <- createFullFormula(data_sub_cens[,-1],investigateResponse)
+predictVariables <- predictVariables[which(predictVariables != "Site")]
+
+logVariables <- names(which(sapply(data_sub_cens[, which(names(data_sub_cens) %in% predictVariables)], function(x) min(as.numeric(x), na.rm = TRUE)) > 0))
+predictString <- paste(setdiff(predictVariables,logVariables[which(substr(logVariables,1,1)=="A")]), collapse = " + ")
+logString <- as.character(sapply(paste("log(", logVariables[which(substr(logVariables,1,1)=="A")], ")", sep = ""), function(x) x))
+logString <- paste(logString, collapse = " + ")
+kitchenSink <- paste(predictString, logString, sep = " + ")
 
 returnPrelim <- prelimModelDev(data_sub_cens,investigateResponse,kitchenSink,
                                "BIC", #Other option is "AIC"
