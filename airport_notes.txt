@@ -1,5 +1,18 @@
 Airport 
 
+10/27/2015
+have finalized dataset - made sure all expected samples are present and removed out of icing season outliers (May-Oct)
+working on making a dye/deicer 4-panel fig with types of deicers and pure dye absorbance graphs
+for all (COD, BOD, DOC, Glycol and Acetate) used 1/2 detection limit for non-detects - there are very few and they are hugely smaller than other data points. with no censored values, can use lasso and r-squared
+altered to use only log() for absorbance values
+created graphs to determine whether to use linear or log() transform for absorbance slopes - looks like linear is slightly better
+redid all cross validations w/o seasonality or linear absorbance
+based on current regressions (using qwsr, replacing censored with 1/2 detection, no seasonality, log(abs) and linear(sag)): Sag281_299, log(A473), Resids490 for COD, DOC and PGlycol
+Acetate and BOD are different. BOD has very few points. Acetate Sag506_530, log(A632), log(A566); BOD Sag530_551, Sag506_530, Sag281_299
+crossval - sites crossval looks good, mostly the same variables. run a few more random and look at results
+then run some lasso and see differences (like Steve's A509?)
+write-up results from this, and some methods, and post all to projects drive for mtg 
+
 6/30/2015
 Steve prepping for mtg this week
 DOC regressions done
