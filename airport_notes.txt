@@ -11,6 +11,8 @@ based on current regressions (using qwsr, replacing censored with 1/2 detection,
 Acetate and BOD are different. BOD has very few points. Acetate Sag506_530, log(A632), log(A566); BOD Sag530_551, Sag506_530, Sag281_299
 crossval - sites crossval looks good, mostly the same variables. run a few more random and look at results
 then run some lasso and see differences (like Steve's A509?)
+after running some lasso, tried running qwsr COD limited to those found by lasso, got same result as previous
+PGlycol result is different
 write-up results from this, and some methods, and post all to projects drive for mtg 
 
 6/30/2015
