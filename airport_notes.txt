@@ -1,5 +1,18 @@
 Airport 
 
+Nov 2015
+Okay - I've incorporated the missing DOC samples and re-ran the regressions. Here's where I'm at now (files are in \\igsarmewfsapa\projects\NonPoint Evaluation\gmia\JAs\R):
+
+1) altered all to use 1/2 detection limit for non-detects 
+2) altered to use only log() for absorbance values with no <=0 values
+3) created graphs to check log vs linear transform for abs slopes, linear looks slightly better, so using linear in regressions
+4) redid all cross-validations w/o seasonality and w/ log(abs)
+5) sites crossval looks same as before, so does random
+6) Acetate and BOD are different (w/ altered variables and non-detects), but BOD has very few points
+7) ran a bunch of lasso reps, came up with mostly the same variables for COD, except A509
+8) re-ran qwsr with only those variables found by lasso (for COD) and got same regression equation as found previously
+9) PGlycol came up with a slightly different regression
+
 10/27/2015
 have finalized dataset - made sure all expected samples are present and removed out of icing season outliers (May-Oct)
 working on making a dye/deicer 4-panel fig with types of deicers and pure dye absorbance graphs
