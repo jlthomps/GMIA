@@ -1,5 +1,5 @@
 # Cross-validation of COD regression using 5 random groups
-setwd("C:/Users/jlthomps/Desktop/git/GMIA")
+setwd("M:/NonPoint Evaluation/gmia/JAs/R")
 load("GMIASagFinal.RData")
 COD2014 <- read.csv(file="COD2014.csv",stringsAsFactors=FALSE,colClasses=c("character","character","numeric","character","numeric","character","character","character","numeric","character","numeric","character","numeric","character","numeric","character","numeric"))
 COD2014$ProjectID <- paste(COD2014$Site,COD2014$Storm,sep="-")

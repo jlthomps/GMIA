@@ -1,5 +1,5 @@
 
-setwd("/Users/jlthomps/Desktop/git/GMIA")
+setwd("M:/NonPoint Evaluation/gmia/JAs/R")
 load("GMIASagFinal.RData")
 load("CODDOCMerge.RData")
 dataMerge <- merge(DfFinal,GMIASag,by="ProjectID")

@@ -1,5 +1,20 @@
 Airport 
 
+Workflow:
+
+Files in M:/NonPoint Evaluation/gmia/JAs/JessicaGMIA
+absDataPrep.R - run to pull in all Aqualog data, format it and save files testAbs.RData and FinalAbsDf.RData; then narrow to desired sites and dates and create plots; then calculate residuals and slopes and save file GMIASagFinal.RData
+CODvsSagsPlots.R - run to pull in GMIASagFinal.RData and COD2014.csv, merge and plot COD vs selected Sag values
+CODDOCplot.R - run to pull in COD2014.csv and DOC files, merge and plot CODvsDOC.pdf and save CODDOCMerge.RData
+DeicerRuns.R - reads in DeicerAbsDf.RData and DyeDilution.csv, saves DeicerFinalAbsDf.RData and DeicerDyePlots.pdf
+
+Regressions are in M:/NonPoint Evaluations/gmia/JAs/R
+absorbenceWorkflow* for Acetate, BOD, DOC and PGlycol, with results in sub-folders
+crossval workflows with results in GMIA_crossVal sub-folder
+lasso workflows and results for COD optical model
+
+
+
 Nov 2015
 Okay - I've incorporated the missing DOC samples and re-ran the regressions. Here's where I'm at now (files are in \\igsarmewfsapa\projects\NonPoint Evaluation\gmia\JAs\R):
 
